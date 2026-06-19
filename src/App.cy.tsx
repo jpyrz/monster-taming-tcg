@@ -23,8 +23,10 @@ describe('Monster Command TCG lab', () => {
     mountApp()
 
     cy.contains('Cindermane')
-    cy.contains('Ember Whelp')
-    cy.contains('Nightmoth')
+    cy.get('[data-cy="rival-bench-stack"]').click()
+    cy.get('[data-cy="focused-card"]').contains('Shellmaw')
+    cy.get('[data-cy="focused-card"]').contains('Cindermane')
+    cy.get('[data-cy="focused-card"]').click()
     cy.get('[data-cy="opening-stance-panel"]').should('be.visible')
     cy.get('[data-cy="choose-opening-hunting"]').should('be.visible')
   })

@@ -29,6 +29,7 @@ import styles from './MonsterLab.module.scss'
 type FocusedCard =
   | { kind: 'hand'; index: number }
   | { kind: 'monster'; owner: Owner; rosterIndex: number }
+  | { kind: 'bench'; owner: Owner }
 
 export function MonsterLab() {
   const [state, setState] = useState<BattleState>(createInitialBattle)
@@ -105,29 +106,39 @@ export function MonsterLab() {
       </section>
 
       <section className={styles.boardArea}>
-        <div className={styles.opponentHand} aria-label="Rival hand">
-          {state.rival.hand.slice(0, 5).map((_, index) => (
-            <span
-              key={index}
-              className={styles.cardBack}
-              style={{ '--card-index': index } as CSSProperties}
-            />
-          ))}
+        <div className={styles.opponentZone}>
+          <div className={styles.opponentHand} aria-label="Rival hand">
+            {state.rival.hand.slice(0, 5).map((_, index) => (
+              <span
+                key={index}
+                className={styles.cardBack}
+                style={{ '--card-index': index } as CSSProperties}
+              />
+            ))}
+          </div>
+          <BenchStack
+            label="Rival bench"
+            owner="rival"
+            tamer={state.rival}
+            onClick={() => setFocusedCard({ kind: 'bench', owner: 'rival' })}
+          />
         </div>
 
         <div className={styles.boardRow} data-owner="rival">
-          {state.rival.roster.map((monster, index) => (
-            <BoardSlot key={monster.instanceId} owner="rival">
-              <MonsterCard
-                active={index === state.rival.activeIndex}
-                monster={monster}
-                onClick={() =>
-                  setFocusedCard({ kind: 'monster', owner: 'rival', rosterIndex: index })
-                }
-                side="rival"
-              />
-            </BoardSlot>
-          ))}
+          <BoardSlot owner="rival">
+            <MonsterCard
+              active
+              monster={getActiveMonster(state.rival)}
+              onClick={() =>
+                setFocusedCard({
+                  kind: 'monster',
+                  owner: 'rival',
+                  rosterIndex: state.rival.activeIndex,
+                })
+              }
+              side="rival"
+            />
+          </BoardSlot>
         </div>
 
         <div className={styles.versus}>
@@ -139,35 +150,29 @@ export function MonsterLab() {
         </div>
 
         <div className={styles.boardRow} data-owner="player">
-          {state.player.roster.map((monster, index) => {
-            const active = index === state.player.activeIndex
-            return (
-              <BoardSlot
-                key={monster.instanceId}
-                isDropTarget={active && state.phase === 'player-turn'}
-                onDragOver={(event) => {
-                  if (active && state.phase === 'player-turn') {
-                    event.preventDefault()
-                  }
-                }}
-                onDrop={active ? handleActiveDrop : undefined}
-                owner="player"
-              >
-                <MonsterCard
-                  active={active}
-                  monster={monster}
-                  onClick={() =>
-                    setFocusedCard({
-                      kind: 'monster',
-                      owner: 'player',
-                      rosterIndex: index,
-                    })
-                  }
-                  side="player"
-                />
-              </BoardSlot>
-            )
-          })}
+          <BoardSlot
+            isDropTarget={state.phase === 'player-turn'}
+            onDragOver={(event) => {
+              if (state.phase === 'player-turn') {
+                event.preventDefault()
+              }
+            }}
+            onDrop={handleActiveDrop}
+            owner="player"
+          >
+            <MonsterCard
+              active
+              monster={playerActive}
+              onClick={() =>
+                setFocusedCard({
+                  kind: 'monster',
+                  owner: 'player',
+                  rosterIndex: state.player.activeIndex,
+                })
+              }
+              side="player"
+            />
+          </BoardSlot>
         </div>
       </section>
 
@@ -242,46 +247,54 @@ export function MonsterLab() {
             </div>
           </div>
 
-          <div className={styles.hand} data-cy="hand">
-            {state.player.hand.map((cardId, index) => {
-              const card = getCardDefinition(cardId)
-              const playable = state.player.focus >= card.cost
-              const cardOffset = index - (state.player.hand.length - 1) / 2
-              return (
-                <button
-                  key={`${cardId}-${index}`}
-                  type="button"
-                  className={styles.handCard}
-                  aria-disabled={!playable}
-                  data-dragging={draggedHandIndex === index || undefined}
-                  data-focused={
-                    focusedCard?.kind === 'hand' && focusedCard.index === index
-                      ? true
-                      : undefined
-                  }
-                  data-playable={playable || undefined}
-                  draggable={playable}
-                  onClick={() => setFocusedCard({ kind: 'hand', index })}
-                  onDragEnd={() => setDraggedHandIndex(null)}
-                  onDragStart={(event) => {
-                    if (!playable) return
-                    setFocusedCard(null)
-                    setDraggedHandIndex(index)
-                    event.dataTransfer.effectAllowed = 'move'
-                    event.dataTransfer.setData('text/plain', String(index))
-                  }}
-                  style={{
-                    '--card-index': index,
-                    '--card-count': state.player.hand.length,
-                    '--card-lift': Math.abs(cardOffset),
-                    '--card-offset': cardOffset,
-                  } as CSSProperties}
-                  data-cy={`card-${card.id}`}
-                >
-                  <CommandCardFace card={card} />
-                </button>
-              )
-            })}
+          <div className={styles.handZone}>
+            <BenchStack
+              label="Your bench"
+              owner="player"
+              tamer={state.player}
+              onClick={() => setFocusedCard({ kind: 'bench', owner: 'player' })}
+            />
+            <div className={styles.hand} data-cy="hand">
+              {state.player.hand.map((cardId, index) => {
+                const card = getCardDefinition(cardId)
+                const playable = state.player.focus >= card.cost
+                const cardOffset = index - (state.player.hand.length - 1) / 2
+                return (
+                  <button
+                    key={`${cardId}-${index}`}
+                    type="button"
+                    className={styles.handCard}
+                    aria-disabled={!playable}
+                    data-dragging={draggedHandIndex === index || undefined}
+                    data-focused={
+                      focusedCard?.kind === 'hand' && focusedCard.index === index
+                        ? true
+                        : undefined
+                    }
+                    data-playable={playable || undefined}
+                    draggable={playable}
+                    onClick={() => setFocusedCard({ kind: 'hand', index })}
+                    onDragEnd={() => setDraggedHandIndex(null)}
+                    onDragStart={(event) => {
+                      if (!playable) return
+                      setFocusedCard(null)
+                      setDraggedHandIndex(index)
+                      event.dataTransfer.effectAllowed = 'move'
+                      event.dataTransfer.setData('text/plain', String(index))
+                    }}
+                    style={{
+                      '--card-index': index,
+                      '--card-count': state.player.hand.length,
+                      '--card-lift': Math.abs(cardOffset),
+                      '--card-offset': cardOffset,
+                    } as CSSProperties}
+                    data-cy={`card-${card.id}`}
+                  >
+                    <CommandCardFace card={card} />
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
           <div className={styles.controls}>
@@ -319,6 +332,11 @@ export function MonsterLab() {
           <span className={styles.focusCard}>
             {focusedCardContent.kind === 'monster' ? (
               <MonsterDetailFace monster={focusedCardContent.monster} />
+            ) : focusedCardContent.kind === 'bench' ? (
+              <BenchDetailFace
+                label={focusedCardContent.label}
+                monsters={focusedCardContent.monsters}
+              />
             ) : (
               <CommandCardFace card={focusedCardContent.card} expanded />
             )}
@@ -399,6 +417,40 @@ function MonsterCard({
           ))
         )}
       </div>
+    </button>
+  )
+}
+
+function BenchStack({
+  label,
+  onClick,
+  owner,
+  tamer,
+}: {
+  label: string
+  onClick: () => void
+  owner: Owner
+  tamer: TamerState
+}) {
+  const benchMonsters = getBenchMonsters(tamer)
+  const standingBenchCount = benchMonsters.filter(
+    ({ monster }) => monster.currentHealth > 0,
+  ).length
+
+  return (
+    <button
+      type="button"
+      className={styles.benchStack}
+      data-cy={`${owner}-bench-stack`}
+      data-owner={owner}
+      onClick={onClick}
+    >
+      <span>{label}</span>
+      <strong>{standingBenchCount}</strong>
+      <small>bench</small>
+      <i />
+      <i />
+      <i />
     </button>
   )
 }
@@ -492,6 +544,33 @@ function MonsterDetailFace({ monster }: { monster: MonsterInstance }) {
   )
 }
 
+function BenchDetailFace({
+  label,
+  monsters,
+}: {
+  label: string
+  monsters: Array<{ monster: MonsterInstance; rosterIndex: number }>
+}) {
+  return (
+    <>
+      <div className={styles.cardTop}>
+        <Badge color="brand">{monsters.length}</Badge>
+        <span>{label}</span>
+      </div>
+      <strong>{label}</strong>
+      <em>Visible bench</em>
+      <p>Benched monsters are public information, but they stay off the active battle line.</p>
+      <div className={styles.benchSpread}>
+        {monsters.map(({ monster }) => (
+          <span key={monster.instanceId}>
+            <MonsterDetailFace monster={monster} />
+          </span>
+        ))}
+      </div>
+    </>
+  )
+}
+
 function getFocusedCardContent(
   state: BattleState,
   focusedCard: FocusedCard | null,
@@ -507,6 +586,20 @@ function getFocusedCardContent(
       : null
   }
 
+  if (focusedCard.kind === 'bench') {
+    return {
+      kind: 'bench' as const,
+      label: focusedCard.owner === 'player' ? 'Your bench' : 'Rival bench',
+      monsters: getBenchMonsters(state[focusedCard.owner]),
+    }
+  }
+
   const monster = state[focusedCard.owner].roster[focusedCard.rosterIndex]
   return monster ? { kind: 'monster' as const, monster } : null
+}
+
+function getBenchMonsters(tamer: TamerState) {
+  return tamer.roster
+    .map((monster, rosterIndex) => ({ monster, rosterIndex }))
+    .filter(({ rosterIndex }) => rosterIndex !== tamer.activeIndex)
 }

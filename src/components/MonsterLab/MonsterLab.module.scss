@@ -121,6 +121,14 @@
     var(--tcg-bg-field);
 }
 
+.opponentZone {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: start;
+  min-height: 3.4rem;
+}
+
 .opponentHand {
   display: flex;
   min-height: 3rem;
@@ -161,7 +169,7 @@
 
 .boardRow {
   display: grid;
-  grid-template-columns: repeat(3, var(--card-width));
+  grid-template-columns: var(--card-width);
   justify-content: center;
   gap: 0.85rem;
   min-height: var(--card-height);
@@ -250,6 +258,13 @@
   isolation: isolate;
 }
 
+.handZone {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: end;
+}
+
 .handCard,
 .boardCard,
 .focusCard,
@@ -318,6 +333,67 @@
 .boardCard[data-defeated] {
   filter: grayscale(1);
   opacity: 0.45;
+}
+
+.benchStack {
+  position: relative;
+  display: grid;
+  width: 5.3rem;
+  min-height: 7rem;
+  place-items: center;
+  padding: 0.55rem 0.45rem;
+  border: 1px solid var(--tcg-border);
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  isolation: isolate;
+}
+
+.benchStack i {
+  position: absolute;
+  inset: 1.1rem 0.55rem 0.5rem;
+  z-index: -1;
+  display: block;
+  border: 2px solid color-mix(in srgb, var(--tcg-border-strong) 80%, transparent);
+  border-radius: 0.7rem;
+  background:
+    linear-gradient(135deg, rgba(77, 171, 247, 0.18), transparent),
+    linear-gradient(135deg, #111827, #05070d);
+  box-shadow: 0 0.75rem 1.2rem rgba(0, 0, 0, 0.25);
+  clip-path: polygon(0.4rem 0, 100% 0, 100% calc(100% - 0.4rem), calc(100% - 0.4rem) 100%, 0 100%, 0 0.4rem);
+}
+
+.benchStack i:nth-of-type(1) {
+  transform: rotate(-7deg) translate(-0.18rem, 0.1rem);
+}
+
+.benchStack i:nth-of-type(2) {
+  transform: rotate(2deg);
+}
+
+.benchStack i:nth-of-type(3) {
+  transform: rotate(8deg) translate(0.2rem, -0.06rem);
+}
+
+.benchStack span,
+.benchStack small {
+  color: var(--tcg-text-muted);
+  font-size: 0.58rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.benchStack strong {
+  color: var(--tcg-accent);
+  font-family: Georgia, serif;
+  font-size: 1.55rem;
+  text-shadow: 0 0 0.7rem color-mix(in srgb, var(--tcg-accent) 30%, transparent);
+}
+
+.benchStack:hover {
+  border-color: var(--tcg-border-strong);
+  box-shadow: 0 0 1rem color-mix(in srgb, var(--tcg-accent) 16%, transparent);
 }
 
 .cardTop,
@@ -503,6 +579,44 @@
   line-height: 1.25;
 }
 
+.benchSpread {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.benchSpread > span {
+  display: grid;
+  gap: 0.34rem;
+  min-height: 17rem;
+  padding: 0.65rem;
+  border: 1px solid var(--tcg-border);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.13)),
+    var(--tcg-surface);
+  clip-path: polygon(0.5rem 0, 100% 0, 100% calc(100% - 0.5rem), calc(100% - 0.5rem) 100%, 0 100%, 0 0.5rem);
+}
+
+.benchSpread > span strong {
+  font-size: 1.05rem;
+}
+
+.benchSpread > span p {
+  font-size: 0.72rem;
+}
+
+.benchSpread .stanceList {
+  gap: 0.3rem;
+}
+
+.benchSpread .stanceList > span {
+  padding: 0.32rem;
+}
+
+.benchSpread .stanceList small {
+  font-size: 0.64rem;
+}
+
 @media (max-width: 52rem) {
   .appShell {
     --card-width: 8.1rem;
@@ -548,6 +662,20 @@
     justify-content: flex-start;
     overflow-x: auto;
     padding-inline: 2.2rem;
+  }
+
+  .handZone,
+  .opponentZone {
+    grid-template-columns: 1fr;
+  }
+
+  .benchStack {
+    width: 6rem;
+    justify-self: start;
+  }
+
+  .benchSpread {
+    grid-template-columns: 1fr;
   }
 
   .handCard {
