@@ -417,23 +417,6 @@
   transform: rotate(8deg) translate(0.2rem, -0.06rem);
 }
 
-.benchStack span,
-.benchStack small {
-  color: var(--tcg-text-muted);
-  font-size: 0.58rem;
-  font-weight: 950;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  text-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 0.8);
-}
-
-.benchStack strong {
-  color: var(--tcg-accent);
-  font-family: Georgia, serif;
-  font-size: 1.55rem;
-  text-shadow: 0 0 0.7rem color-mix(in srgb, var(--tcg-accent) 30%, transparent);
-}
-
 .benchStack:hover {
   box-shadow: 0 0 1rem color-mix(in srgb, var(--tcg-accent) 16%, transparent);
 }

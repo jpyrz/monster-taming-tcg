@@ -121,7 +121,6 @@ export function MonsterLab() {
           <BenchStack
             label="Rival bench"
             owner="rival"
-            tamer={state.rival}
             onClick={() => setFocusedCard({ kind: 'bench', owner: 'rival' })}
           />
         </div>
@@ -239,7 +238,6 @@ export function MonsterLab() {
             <BenchStack
               label="Your bench"
               owner="player"
-              tamer={state.player}
               onClick={() => setFocusedCard({ kind: 'bench', owner: 'player' })}
             />
             <div className={styles.hand} data-cy="hand">
@@ -414,29 +412,20 @@ function BenchStack({
   label,
   onClick,
   owner,
-  tamer,
 }: {
   label: string
   onClick: () => void
   owner: Owner
-  tamer: TamerState
 }) {
-  const benchMonsters = getBenchMonsters(tamer)
-  const standingBenchCount = benchMonsters.filter(
-    ({ monster }) => monster.currentHealth > 0,
-  ).length
-
   return (
     <button
       type="button"
+      aria-label={label}
       className={styles.benchStack}
       data-cy={`${owner}-bench-stack`}
       data-owner={owner}
       onClick={onClick}
     >
-      <span>{label}</span>
-      <strong>{standingBenchCount}</strong>
-      <small>bench</small>
       <i />
       <i />
       <i />
