@@ -308,9 +308,12 @@
 .choiceGrid button {
   display: grid;
   gap: 0.4rem;
+  box-sizing: border-box;
   width: var(--card-width);
-  min-height: var(--card-height);
+  height: var(--card-height);
+  min-height: 0;
   padding: 0.65rem;
+  overflow: hidden;
   border: 1px solid var(--tcg-border);
   color: inherit;
   background:
@@ -324,7 +327,7 @@
 .handCard {
   margin-inline: -1.1rem;
   cursor: pointer;
-  transform: translateY(calc(var(--card-lift) * 0.18rem)) rotate(calc(var(--card-offset) * 5deg));
+  transform: rotate(calc(var(--card-offset) * 5deg));
   transform-origin: 50% 120%;
   transition: border-color 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease, transform 0.16s ease;
   z-index: calc(10 + var(--card-index));
@@ -448,17 +451,26 @@
 .cardTop,
 .cardStats {
   display: flex;
+  min-width: 0;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
 }
 
+.cardTop > *,
+.cardStats > * {
+  min-width: 0;
+}
+
 .cardTop span {
+  overflow: hidden;
   color: var(--tcg-text-muted);
   font-size: 0.62rem;
   font-weight: 950;
   letter-spacing: 0.1em;
+  text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .handCard strong,
@@ -469,6 +481,19 @@
 .choiceGrid button strong {
   font-family: Georgia, serif;
   font-size: 1.12rem;
+  line-height: 1.08;
+}
+
+.handCard strong,
+.boardCard strong,
+.focusCard strong,
+.benchCard strong,
+.rosterChoiceCard strong,
+.choiceGrid button strong {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .handCard em,
@@ -481,7 +506,11 @@
   font-style: normal;
   font-weight: 950;
   letter-spacing: 0.12em;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .handCard p,
@@ -495,7 +524,11 @@
   line-height: 1.3;
 }
 
-.boardCard p {
+.handCard p,
+.boardCard p,
+.focusCard p,
+.benchCard p,
+.rosterChoiceCard p {
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
@@ -508,6 +541,12 @@
   border-top: 1px solid var(--tcg-border);
   font-size: 0.72rem;
   font-weight: 950;
+}
+
+.cardStats span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .adaptations {
@@ -545,7 +584,7 @@
 
 .rosterChoiceCard {
   width: 100%;
-  min-height: 27rem;
+  height: 27rem;
   cursor: pointer;
   border-color: color-mix(in srgb, var(--tcg-border-strong) 65%, transparent);
   transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
@@ -648,7 +687,7 @@
   position: relative;
   z-index: 1;
   width: min(20rem, 86vw);
-  min-height: 26rem;
+  height: 26rem;
   padding: 1rem;
   border-color: var(--tcg-accent);
   box-shadow:
@@ -718,6 +757,8 @@
 .stanceList {
   display: grid;
   gap: 0.45rem;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .stanceList > span,
@@ -757,9 +798,13 @@
 }
 
 .stanceList small {
+  display: -webkit-box;
+  overflow: hidden;
   color: var(--tcg-text-muted);
   font-size: 0.72rem;
   line-height: 1.25;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .benchSpread {
@@ -771,7 +816,7 @@
 
 .benchCard {
   width: 100%;
-  min-height: 25rem;
+  height: 25rem;
   cursor: default;
   border-color: var(--tcg-border-strong);
 }
@@ -909,7 +954,7 @@
   }
 
   .rosterChoiceCard {
-    min-height: 23rem;
+    height: 23rem;
   }
 
   .benchFocus {
