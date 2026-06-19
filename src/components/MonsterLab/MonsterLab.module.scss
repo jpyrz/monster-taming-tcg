@@ -161,9 +161,11 @@
 
 .opponentBenchZone {
   position: absolute;
-  top: 0.35rem;
-  right: 1.25rem;
+  top: -0.1rem;
+  left: 11rem;
   z-index: 11;
+  transform: rotate(180deg);
+  transform-origin: center;
 }
 
 .opponentHand {
@@ -223,11 +225,11 @@
 }
 
 .boardRow[data-owner='rival'] {
-  top: 12%;
+  top: calc(50% - 14.2rem);
 }
 
 .boardRow[data-owner='player'] {
-  bottom: 20%;
+  bottom: calc(50% - 14.2rem);
 }
 
 .boardSlot {
@@ -811,11 +813,11 @@
   }
 
   .boardRow[data-owner='rival'] {
-    top: 12%;
+    top: calc(50% - 11.6rem);
   }
 
   .boardRow[data-owner='player'] {
-    bottom: 18%;
+    bottom: calc(50% - 11.6rem);
   }
 
   .settingsHud {
@@ -833,10 +835,10 @@
   }
 
   .opponentBenchZone {
-    top: -0.15rem;
-    right: 0.4rem;
-    transform: scale(0.82);
-    transform-origin: top right;
+    top: -0.2rem;
+    left: 6.2rem;
+    transform: rotate(180deg) scale(0.82);
+    transform-origin: center;
   }
 
   .opponentHand {
