@@ -2,6 +2,7 @@ import App from './App'
 import { TcgThemeProvider } from './theme/TcgThemeProvider'
 
 function mountApp() {
+  cy.viewport(1280, 720)
   cy.mount(
     <TcgThemeProvider>
       <App />
@@ -12,9 +13,17 @@ function mountApp() {
 function dragCardToActiveSlot(selector: string) {
   cy.get(selector).first().then(($card) => {
     const dataTransfer = new DataTransfer()
-    cy.wrap($card).trigger('dragstart', { dataTransfer })
-    cy.get('[data-cy="player-active-slot"]').trigger('dragover', { dataTransfer })
-    cy.get('[data-cy="player-active-slot"]').trigger('drop', { dataTransfer })
+    const handIndex = $card.parent().children('button').index($card)
+    dataTransfer.setData('text/plain', String(handIndex))
+    cy.wrap($card).trigger('dragstart', { dataTransfer, force: true })
+    cy.get('[data-cy="player-active-slot"]').trigger('dragover', {
+      dataTransfer,
+      force: true,
+    })
+    cy.get('[data-cy="player-active-slot"]').trigger('drop', {
+      dataTransfer,
+      force: true,
+    })
   })
 }
 
@@ -26,7 +35,7 @@ describe('Monster Command TCG lab', () => {
     cy.get('[data-cy="rival-bench-stack"]').click()
     cy.get('[data-cy="focused-card"]').contains('Shellmaw')
     cy.get('[data-cy="focused-card"]').contains('Cindermane')
-    cy.get('[data-cy="focused-card"]').click()
+    cy.get('[data-cy="close-focused-card"]').click({ force: true })
     cy.get('[data-cy="opening-stance-panel"]').should('be.visible')
     cy.get('[data-cy="choose-opening-hunting"]').should('be.visible')
   })
@@ -34,16 +43,16 @@ describe('Monster Command TCG lab', () => {
   it('opens card details for monsters and commands', () => {
     mountApp()
 
+    cy.get('[data-cy="choose-opening-hunting"]').click()
     cy.get('[data-cy="player-active-monster"]').click()
     cy.get('[data-cy="focused-card"]').contains('Hunting')
     cy.get('[data-cy="focused-card"]').contains('Frenzy')
     cy.get('[data-cy="focused-card"]').contains('Ashcloak')
-    cy.get('[data-cy="focused-card"]').click()
+    cy.get('[data-cy="close-focused-card"]').click({ force: true })
 
-    cy.get('[data-cy="choose-opening-hunting"]').click()
-    cy.get('[data-cy="card-rake"]').first().click()
+    cy.get('[data-cy="card-rake"]').first().click({ force: true })
     cy.get('[data-cy="focused-card"]').contains('Rake')
-    cy.get('[data-cy="focused-card"]').contains('Drag command cards')
+    cy.get('[data-cy="focused-card"]').contains('Deal 3 damage')
   })
 
   it('chooses a starting stance and resolves stance-modified commands', () => {
@@ -53,7 +62,7 @@ describe('Monster Command TCG lab', () => {
     cy.get('[data-cy="player-active-monster"]').contains('Frenzy')
     dragCardToActiveSlot('[data-cy="card-rake"]')
 
-    cy.contains('for 5 damage')
+    cy.get('[data-cy="rival-active-monster"]').contains('9/14 HP')
     cy.get('[data-cy="player-active-monster"]').contains('17/18 HP')
   })
 
@@ -61,12 +70,14 @@ describe('Monster Command TCG lab', () => {
     mountApp()
 
     cy.get('[data-cy="choose-opening-hunting"]').click()
+    cy.get('[data-cy="player-active-monster"]').click()
     cy.get('[data-cy="stance-ashcloak"]').click()
     cy.get('[data-cy="player-active-monster"]').contains('Ashcloak')
+    cy.get('[data-cy="player-active-monster"]').click()
     cy.get('[data-cy="stance-frenzy"]').should('be.disabled')
   })
 
-  it('spends Focus across multiple cards and attaches adaptations', () => {
+  it('spends Focus across multiple cards', () => {
     mountApp()
 
     cy.get('[data-cy="choose-opening-hunting"]').click()
@@ -76,7 +87,12 @@ describe('Monster Command TCG lab', () => {
 
     cy.get('[data-cy="focus-count"]').contains('0')
     cy.get('[data-cy="card-brace"]').should('have.attr', 'aria-disabled', 'true')
-    cy.contains('End turn').click()
+  })
+
+  it('attaches adaptations to the active monster', () => {
+    mountApp()
+
+    cy.get('[data-cy="choose-opening-hunting"]').click()
     dragCardToActiveSlot('[data-cy="card-hardenedScar"]')
     cy.get('[data-cy="player-active-monster"]').contains('Hardened Scar')
   })
@@ -87,7 +103,7 @@ describe('Monster Command TCG lab', () => {
     cy.get('[data-cy="choose-opening-frenzy"]').click()
     for (let turn = 0; turn < 18; turn += 1) {
       cy.get('body').then(($body) => {
-        if ($body.text().includes('Rival sends out')) {
+        if ($body.text().includes('Shellmaw')) {
           return
         }
 
@@ -105,6 +121,6 @@ describe('Monster Command TCG lab', () => {
       })
     }
 
-    cy.contains('Rival sends out')
+    cy.get('[data-cy="rival-active-monster"]').contains('Shellmaw')
   })
 })

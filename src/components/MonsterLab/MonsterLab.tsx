@@ -1,4 +1,10 @@
-import { Badge, Button, Progress, SegmentedControl } from '@mantine/core'
+import {
+  ActionIcon,
+  Badge,
+  Button,
+  Progress,
+  SegmentedControl,
+} from '@mantine/core'
 import {
   useState,
   type CSSProperties,
@@ -35,6 +41,7 @@ export function MonsterLab() {
   const [state, setState] = useState<BattleState>(createInitialBattle)
   const [focusedCard, setFocusedCard] = useState<FocusedCard | null>(null)
   const [draggedHandIndex, setDraggedHandIndex] = useState<number | null>(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const { themeId, setThemeId, themeOptions } = useTcgTheme()
   const playerActive = getActiveMonster(state.player)
   const playerDefinition = getActiveMonsterDefinition(state.player)
@@ -49,7 +56,7 @@ export function MonsterLab() {
   function playDraggedCard(handIndex: number) {
     setFocusedCard(null)
     setDraggedHandIndex(null)
-    setState(playCard(state, 'player', handIndex))
+    setState((currentState) => playCard(currentState, 'player', handIndex))
   }
 
   function handleActiveDrop(event: DragEvent) {
@@ -62,29 +69,41 @@ export function MonsterLab() {
 
   return (
     <main className={styles.appShell}>
-      <header className={styles.header}>
-        <div>
-          <span>Prototype lab</span>
-          <h1>Monster Command TCG</h1>
-          <p>
-            A roster battle where commands are generic orders and monsters turn
-            those orders into stance-driven tactics.
-          </p>
-        </div>
-        <div className={styles.headerActions}>
-          <SegmentedControl
-            value={themeId}
-            onChange={(value) => setThemeId(value as typeof themeId)}
-            data={Object.values(themeOptions).map((theme) => ({
-              label: theme.label,
-              value: theme.id,
-            }))}
-          />
-          <Button color="brand" variant="light" onClick={resetBattle}>
-            Reset
-          </Button>
-        </div>
-      </header>
+      <div className={styles.settingsHud}>
+        <ActionIcon
+          aria-label="Settings"
+          className={styles.settingsButton}
+          color="brand"
+          data-cy="settings-toggle"
+          onClick={() => setSettingsOpen((isOpen) => !isOpen)}
+          size="lg"
+          variant="filled"
+        >
+          ⚙
+        </ActionIcon>
+        {settingsOpen && (
+          <section className={styles.settingsMenu} data-cy="settings-menu">
+            <span>Settings</span>
+            <SegmentedControl
+              value={themeId}
+              onChange={(value) => setThemeId(value as typeof themeId)}
+              data={Object.values(themeOptions).map((theme) => ({
+                label: theme.label,
+                value: theme.id,
+              }))}
+            />
+            <Button color="brand" variant="light" onClick={resetBattle}>
+              Reset
+            </Button>
+            <div className={styles.settingsLog} aria-label="Battle log">
+              <span>Battle log</span>
+              {state.log.slice(0, 8).map((entry, index) => (
+                <p key={`${entry}-${index}`}>{entry}</p>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
 
       <section className={styles.playerBanner}>
         <TamerBanner label="Rival" tamer={state.rival} />
@@ -225,28 +244,6 @@ export function MonsterLab() {
 
       {state.phase === 'player-turn' && (
         <section className={styles.commandPanel}>
-          <div className={styles.stancePanel}>
-            <div>
-              <span>Stance</span>
-              <h2>{getCurrentStance(playerActive)?.name ?? 'Unset'}</h2>
-              <p>{getCurrentStance(playerActive)?.text}</p>
-            </div>
-            <div className={styles.stanceButtons}>
-              {playerDefinition.stances.map((stance) => (
-                <Button
-                  key={stance.id}
-                  color="brand"
-                  variant={playerActive.stanceId === stance.id ? 'filled' : 'light'}
-                  disabled={!state.player.freeStanceChange}
-                  onClick={() => setState(switchActiveStance(state, 'player', stance.id))}
-                  data-cy={`stance-${stance.id}`}
-                >
-                  {stance.name}
-                </Button>
-              ))}
-            </div>
-          </div>
-
           <div className={styles.handZone}>
             <BenchStack
               label="Your bench"
@@ -317,18 +314,15 @@ export function MonsterLab() {
         </section>
       )}
 
-      <section className={styles.log} aria-label="Battle log">
-        {state.log.slice(0, 8).map((entry, index) => (
-          <p key={`${entry}-${index}`}>{entry}</p>
-        ))}
-      </section>
-
       {focusedCardContent && (
-        <button
-          className={styles.focusOverlay}
-          data-cy="focused-card"
-          onClick={() => setFocusedCard(null)}
-        >
+        <div className={styles.focusOverlay} data-cy="focused-card">
+          <button
+            type="button"
+            aria-label="Close card details"
+            className={styles.focusBackdrop}
+            data-cy="close-focused-card"
+            onClick={() => setFocusedCard(null)}
+          />
           <span
             className={
               focusedCardContent.kind === 'bench'
@@ -337,7 +331,22 @@ export function MonsterLab() {
             }
           >
             {focusedCardContent.kind === 'monster' ? (
-              <MonsterDetailFace monster={focusedCardContent.monster} />
+              <MonsterDetailFace
+                canChangeStance={
+                  focusedCard?.kind === 'monster' &&
+                  focusedCard.owner === 'player' &&
+                  focusedCard.rosterIndex === state.player.activeIndex &&
+                  state.phase === 'player-turn'
+                }
+                freeStanceChange={state.player.freeStanceChange}
+                monster={focusedCardContent.monster}
+                onChangeStance={(stanceId) => {
+                  setFocusedCard(null)
+                  setState((currentState) =>
+                    switchActiveStance(currentState, 'player', stanceId),
+                  )
+                }}
+              />
             ) : focusedCardContent.kind === 'bench' ? (
               <BenchDetailFace
                 label={focusedCardContent.label}
@@ -348,10 +357,9 @@ export function MonsterLab() {
             )}
           </span>
           <em>
-            Tap outside to return. Drag command cards from your hand onto your
-            active monster slot.
+            Tap outside to return.
           </em>
-        </button>
+        </div>
       )}
     </main>
   )
@@ -512,7 +520,17 @@ function CommandCardFace({
   )
 }
 
-function MonsterDetailFace({ monster }: { monster: MonsterInstance }) {
+function MonsterDetailFace({
+  canChangeStance,
+  freeStanceChange,
+  monster,
+  onChangeStance,
+}: {
+  canChangeStance?: boolean
+  freeStanceChange?: boolean
+  monster: MonsterInstance
+  onChangeStance?: (stanceId: string) => void
+}) {
   const definition = getMonsterDefinition(monster)
   const stance = getCurrentStance(monster)
 
@@ -527,13 +545,27 @@ function MonsterDetailFace({ monster }: { monster: MonsterInstance }) {
       <p>{definition.adaptationTrigger}</p>
       <div className={styles.stanceList}>
         {definition.stances.map((candidate) => (
-          <span
-            key={candidate.id}
-            data-current={candidate.id === monster.stanceId || undefined}
-          >
-            <strong>{candidate.name}</strong>
-            <small>{candidate.text}</small>
-          </span>
+          canChangeStance ? (
+            <button
+              key={candidate.id}
+              type="button"
+              disabled={!freeStanceChange || candidate.id === monster.stanceId}
+              onClick={() => onChangeStance?.(candidate.id)}
+              data-current={candidate.id === monster.stanceId || undefined}
+              data-cy={`stance-${candidate.id}`}
+            >
+              <strong>{candidate.name}</strong>
+              <small>{candidate.text}</small>
+            </button>
+          ) : (
+            <span
+              key={candidate.id}
+              data-current={candidate.id === monster.stanceId || undefined}
+            >
+              <strong>{candidate.name}</strong>
+              <small>{candidate.text}</small>
+            </span>
+          )
         ))}
       </div>
       <div className={styles.cardStats}>
