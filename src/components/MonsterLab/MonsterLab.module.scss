@@ -162,7 +162,7 @@
 .opponentBenchZone {
   position: absolute;
   top: -0.1rem;
-  left: 11rem;
+  left: calc(50% + 18rem);
   z-index: 11;
   transform: rotate(180deg);
   transform-origin: center;
@@ -836,7 +836,7 @@
 
   .opponentBenchZone {
     top: -0.2rem;
-    left: 6.2rem;
+    left: calc(50% + 10.5rem);
     transform: rotate(180deg) scale(0.82);
     transform-origin: center;
   }
