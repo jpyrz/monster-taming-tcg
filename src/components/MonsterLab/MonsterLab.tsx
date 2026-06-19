@@ -329,7 +329,13 @@ export function MonsterLab() {
           data-cy="focused-card"
           onClick={() => setFocusedCard(null)}
         >
-          <span className={styles.focusCard}>
+          <span
+            className={
+              focusedCardContent.kind === 'bench'
+                ? styles.benchFocus
+                : styles.focusCard
+            }
+          >
             {focusedCardContent.kind === 'monster' ? (
               <MonsterDetailFace monster={focusedCardContent.monster} />
             ) : focusedCardContent.kind === 'bench' ? (
@@ -553,21 +559,58 @@ function BenchDetailFace({
 }) {
   return (
     <>
-      <div className={styles.cardTop}>
-        <Badge color="brand">{monsters.length}</Badge>
+      <div className={styles.benchHeader}>
         <span>{label}</span>
+        <strong>Bench cards</strong>
+        <p>Public monster cards, held off the active battle line.</p>
       </div>
-      <strong>{label}</strong>
-      <em>Visible bench</em>
-      <p>Benched monsters are public information, but they stay off the active battle line.</p>
       <div className={styles.benchSpread}>
         {monsters.map(({ monster }) => (
-          <span key={monster.instanceId}>
-            <MonsterDetailFace monster={monster} />
-          </span>
+          <BenchMonsterCard key={monster.instanceId} monster={monster} />
         ))}
       </div>
     </>
+  )
+}
+
+function BenchMonsterCard({ monster }: { monster: MonsterInstance }) {
+  const definition = getMonsterDefinition(monster)
+  const stance = getCurrentStance(monster)
+
+  return (
+    <article
+      className={styles.benchCard}
+      data-defeated={monster.currentHealth <= 0 || undefined}
+    >
+      <div className={styles.cardTop}>
+        <Badge color="brand">SPD {definition.speed}</Badge>
+        <span>{definition.traits.join(' / ')}</span>
+      </div>
+      <strong>{definition.name}</strong>
+      <em>{stance ? `${stance.name} stance` : 'No stance chosen'}</em>
+      <p>{definition.adaptationTrigger}</p>
+      <div className={styles.stanceList}>
+        {definition.stances.map((candidate) => (
+          <span
+            key={candidate.id}
+            data-current={candidate.id === monster.stanceId || undefined}
+          >
+            <strong>{candidate.name}</strong>
+            <small>{candidate.text}</small>
+          </span>
+        ))}
+      </div>
+      <div className={styles.cardStats}>
+        <span>
+          {monster.currentHealth}/{definition.maxHealth} HP
+        </span>
+        <span>
+          {monster.adaptations.length > 0
+            ? monster.adaptations.join(', ')
+            : 'No adaptations'}
+        </span>
+      </div>
+    </article>
   )
 }
 

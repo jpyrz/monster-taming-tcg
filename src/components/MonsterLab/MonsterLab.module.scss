@@ -268,6 +268,7 @@
 .handCard,
 .boardCard,
 .focusCard,
+.benchCard,
 .choiceGrid button {
   display: grid;
   gap: 0.4rem;
@@ -415,6 +416,7 @@
 .handCard strong,
 .boardCard strong,
 .focusCard strong,
+.benchCard strong,
 .choiceGrid button strong {
   font-family: Georgia, serif;
   font-size: 1.12rem;
@@ -422,7 +424,8 @@
 
 .handCard em,
 .boardCard em,
-.focusCard em {
+.focusCard em,
+.benchCard em {
   color: var(--tcg-accent);
   font-size: 0.62rem;
   font-style: normal;
@@ -433,7 +436,8 @@
 
 .handCard p,
 .boardCard p,
-.focusCard p {
+.focusCard p,
+.benchCard p {
   margin: 0;
   color: var(--tcg-text-muted);
   font-size: 0.72rem;
@@ -541,6 +545,41 @@
   font-size: 0.95rem;
 }
 
+.benchFocus {
+  display: grid;
+  gap: 1rem;
+  width: min(42rem, 94vw);
+  max-height: min(42rem, 86vh);
+  overflow: auto;
+  cursor: default;
+  transform: translateY(-0.5rem);
+}
+
+.benchHeader {
+  display: grid;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.benchHeader span {
+  color: var(--tcg-accent);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.benchHeader strong {
+  font-family: Georgia, serif;
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+}
+
+.benchHeader p {
+  margin: 0;
+  color: var(--tcg-text-muted);
+  font-size: 0.88rem;
+}
+
 .focusOverlay > em {
   margin-top: -5rem;
   color: var(--tcg-text-muted);
@@ -581,40 +620,29 @@
 
 .benchSpread {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
+  grid-template-columns: repeat(2, minmax(15.5rem, 18rem));
+  justify-content: center;
+  gap: 1rem;
 }
 
-.benchSpread > span {
-  display: grid;
-  gap: 0.34rem;
-  min-height: 17rem;
-  padding: 0.65rem;
-  border: 1px solid var(--tcg-border);
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.13)),
-    var(--tcg-surface);
-  clip-path: polygon(0.5rem 0, 100% 0, 100% calc(100% - 0.5rem), calc(100% - 0.5rem) 100%, 0 100%, 0 0.5rem);
+.benchCard {
+  width: 100%;
+  min-height: 25rem;
+  cursor: default;
+  border-color: var(--tcg-border-strong);
 }
 
-.benchSpread > span strong {
-  font-size: 1.05rem;
+.benchCard[data-defeated] {
+  filter: grayscale(1);
+  opacity: 0.55;
 }
 
-.benchSpread > span p {
-  font-size: 0.72rem;
+.benchCard > strong {
+  font-size: 1.55rem;
 }
 
-.benchSpread .stanceList {
-  gap: 0.3rem;
-}
-
-.benchSpread .stanceList > span {
-  padding: 0.32rem;
-}
-
-.benchSpread .stanceList small {
-  font-size: 0.64rem;
+.benchCard p {
+  font-size: 0.8rem;
 }
 
 @media (max-width: 52rem) {
