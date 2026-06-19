@@ -35,6 +35,7 @@ export type TamerState = {
 }
 
 export type GamePhase =
+  | 'choose-opening-monster'
   | 'choose-opening-stance'
   | 'player-turn'
   | 'player-replace'
@@ -105,7 +106,7 @@ export function createInitialBattle(): BattleState {
 
   return {
     current: 'player',
-    phase: 'choose-opening-stance',
+    phase: 'choose-opening-monster',
     turn: 1,
     player: makeTamer(playerRoster, playerDeck, 'player'),
     rival: {
@@ -116,7 +117,7 @@ export function createInitialBattle(): BattleState {
           : monster,
       ),
     },
-    log: ['Choose your opening stance. Your roster is ready.'],
+    log: ['Choose your opening monster. Your roster is ready.'],
   }
 }
 
@@ -139,6 +140,33 @@ export function getActiveMonsterDefinition(tamer: TamerState) {
 export function getCurrentStance(monster: MonsterInstance) {
   const definition = getMonsterDefinition(monster)
   return definition.stances.find((stance) => stance.id === monster.stanceId) ?? null
+}
+
+export function chooseOpeningMonster(
+  state: BattleState,
+  rosterIndex: number,
+): BattleState {
+  if (state.phase !== 'choose-opening-monster') {
+    return state
+  }
+
+  const monster = state.player.roster[rosterIndex]
+  if (!monster || monster.currentHealth <= 0) {
+    return state
+  }
+
+  return {
+    ...state,
+    phase: 'choose-opening-stance',
+    player: {
+      ...state.player,
+      activeIndex: rosterIndex,
+    },
+    log: [
+      `${getMonsterDefinition(monster).name} steps onto the field.`,
+      ...state.log,
+    ],
+  }
 }
 
 export function chooseOpeningStance(

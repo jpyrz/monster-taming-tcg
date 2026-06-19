@@ -302,6 +302,7 @@
 .boardCard,
 .focusCard,
 .benchCard,
+.rosterChoiceCard,
 .choiceGrid button {
   display: grid;
   gap: 0.4rem;
@@ -462,6 +463,7 @@
 .boardCard strong,
 .focusCard strong,
 .benchCard strong,
+.rosterChoiceCard strong,
 .choiceGrid button strong {
   font-family: Georgia, serif;
   font-size: 1.12rem;
@@ -470,7 +472,8 @@
 .handCard em,
 .boardCard em,
 .focusCard em,
-.benchCard em {
+.benchCard em,
+.rosterChoiceCard em {
   color: var(--tcg-accent);
   font-size: 0.62rem;
   font-style: normal;
@@ -482,7 +485,8 @@
 .handCard p,
 .boardCard p,
 .focusCard p,
-.benchCard p {
+.benchCard p,
+.rosterChoiceCard p {
   margin: 0;
   color: var(--tcg-text-muted);
   font-size: 0.72rem;
@@ -528,6 +532,30 @@
 .choiceGrid button:hover {
   border-color: var(--tcg-accent);
   box-shadow: 0 0 1.3rem color-mix(in srgb, var(--tcg-accent) 22%, transparent);
+}
+
+.rosterChoiceGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(13.5rem, 16rem));
+  justify-content: center;
+  gap: 1rem;
+}
+
+.rosterChoiceCard {
+  width: 100%;
+  min-height: 27rem;
+  cursor: pointer;
+  border-color: color-mix(in srgb, var(--tcg-border-strong) 65%, transparent);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.rosterChoiceCard:hover,
+.rosterChoiceCard:focus-visible {
+  border-color: var(--tcg-accent);
+  box-shadow:
+    0 1.2rem 2rem rgba(0, 0, 0, 0.36),
+    0 0 1.4rem color-mix(in srgb, var(--tcg-accent) 22%, transparent);
+  transform: translateY(-0.35rem);
 }
 
 .replacement {
@@ -870,6 +898,16 @@
     grid-template-columns: repeat(3, var(--card-width));
     gap: 0.5rem;
     overflow-x: auto;
+  }
+
+  .rosterChoiceGrid {
+    grid-template-columns: repeat(3, minmax(10.5rem, 12.5rem));
+    gap: 0.55rem;
+    overflow-x: auto;
+  }
+
+  .rosterChoiceCard {
+    min-height: 23rem;
   }
 
   .benchFocus {

@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from 'react'
 import {
+  chooseOpeningMonster,
   chooseOpeningStance,
   chooseReplacement,
   createInitialBattle,
@@ -184,6 +185,22 @@ export function MonsterLab() {
                 <strong>{stance.name}</strong>
                 <small>{stance.text}</small>
               </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {state.phase === 'choose-opening-monster' && (
+        <section className={styles.choicePanel} data-cy="opening-monster-panel">
+          <span>Opening monster</span>
+          <h2>Choose who starts on the field.</h2>
+          <div className={styles.rosterChoiceGrid}>
+            {state.player.roster.map((monster, rosterIndex) => (
+              <OpeningMonsterChoice
+                key={monster.instanceId}
+                monster={monster}
+                onClick={() => setState(chooseOpeningMonster(state, rosterIndex))}
+              />
             ))}
           </div>
         </section>
@@ -601,6 +618,45 @@ function BenchMonsterCard({ monster }: { monster: MonsterInstance }) {
         </span>
       </div>
     </article>
+  )
+}
+
+function OpeningMonsterChoice({
+  monster,
+  onClick,
+}: {
+  monster: MonsterInstance
+  onClick: () => void
+}) {
+  const definition = getMonsterDefinition(monster)
+
+  return (
+    <button
+      type="button"
+      className={styles.rosterChoiceCard}
+      onClick={onClick}
+      data-cy={`choose-monster-${definition.id}`}
+    >
+      <div className={styles.cardTop}>
+        <Badge color="brand">SPD {definition.speed}</Badge>
+        <span>{definition.traits.join(' / ')}</span>
+      </div>
+      <strong>{definition.name}</strong>
+      <em>Choose starter</em>
+      <p>{definition.adaptationTrigger}</p>
+      <div className={styles.stanceList}>
+        {definition.stances.map((candidate) => (
+          <span key={candidate.id}>
+            <strong>{candidate.name}</strong>
+            <small>{candidate.text}</small>
+          </span>
+        ))}
+      </div>
+      <div className={styles.cardStats}>
+        <span>{definition.maxHealth} HP</span>
+        <span>Monster card</span>
+      </div>
+    </button>
   )
 }
 
