@@ -105,36 +105,18 @@ export function MonsterLab() {
         )}
       </div>
 
-      <section className={styles.playerBanner}>
-        <TamerBanner label="Rival" tamer={state.rival} />
-        <div className={styles.turnBadge}>
-          <span>Turn {state.turn}</span>
-          <strong>
-            {state.phase === 'victory'
-              ? 'Victory'
-              : state.phase === 'defeat'
-                ? 'Defeat'
-                : state.phase === 'choose-opening-stance'
-                  ? 'Choose stance'
-                  : state.phase === 'player-replace'
-                    ? 'Choose replacement'
-                    : 'Your turn'}
-          </strong>
-        </div>
-        <TamerBanner label="You" tamer={state.player} />
-      </section>
-
       <section className={styles.boardArea}>
-        <div className={styles.opponentZone}>
-          <div className={styles.opponentHand} aria-label="Rival hand">
-            {state.rival.hand.slice(0, 5).map((_, index) => (
-              <span
-                key={index}
-                className={styles.cardBack}
-                style={{ '--card-index': index } as CSSProperties}
-              />
-            ))}
-          </div>
+        <div className={styles.opponentHand} aria-label="Rival hand">
+          {state.rival.hand.slice(0, 5).map((_, index) => (
+            <span
+              key={index}
+              className={styles.cardBack}
+              style={{ '--card-index': index } as CSSProperties}
+            />
+          ))}
+        </div>
+
+        <div className={styles.opponentBenchZone}>
           <BenchStack
             label="Rival bench"
             owner="rival"
@@ -158,14 +140,6 @@ export function MonsterLab() {
               side="rival"
             />
           </BoardSlot>
-        </div>
-
-        <div className={styles.versus}>
-          <strong>Command Line</strong>
-          <span>
-            Drag a command from hand onto {playerDefinition.name}; click any card
-            to inspect it.
-          </span>
         </div>
 
         <div className={styles.boardRow} data-owner="player">
@@ -362,22 +336,6 @@ export function MonsterLab() {
         </div>
       )}
     </main>
-  )
-}
-
-function TamerBanner({ label, tamer }: { label: string; tamer: TamerState }) {
-  const active = getActiveMonster(tamer)
-  const definition = getMonsterDefinition(active)
-  const defeated = tamer.roster.filter((monster) => monster.currentHealth <= 0).length
-
-  return (
-    <article className={styles.tamerBanner}>
-      <span>{label}</span>
-      <strong>{definition.name}</strong>
-      <small>
-        {3 - defeated}/3 standing · {tamer.focus} Focus
-      </small>
-    </article>
   )
 }
 
