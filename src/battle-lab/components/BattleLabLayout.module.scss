@@ -60,7 +60,6 @@
   background: var(--tcg-accent);
   box-shadow: 0 0.8rem 1.5rem rgba(0, 0, 0, 0.32);
   cursor: pointer;
-  touch-action: manipulation;
 }
 
 .settingsMenu,
@@ -76,7 +75,7 @@
   display: grid;
   gap: 0.7rem;
   width: 24rem;
-  max-width: calc(100vw - 1.5rem);
+  max-width: calc(1280px - 1.5rem);
   padding: 0.75rem;
 }
 
@@ -200,7 +199,7 @@
   gap: 1rem;
   align-items: end;
   width: 58rem;
-  max-width: calc(100vw - 2rem);
+  max-width: calc(1280px - 2rem);
   transform: translateX(-50%);
 }
 
@@ -232,7 +231,6 @@
   background: transparent;
   cursor: pointer;
   touch-action: none;
-  user-select: none;
   transform: rotate(calc(var(--card-offset) * 5deg));
   transform-origin: 50% 120%;
   transition: filter 0.16s ease, opacity 0.16s ease, transform 0.16s ease;
@@ -254,20 +252,6 @@
   opacity: 0.62;
 }
 
-@media (pointer: coarse) {
-  .handZone {
-    bottom: -5.7rem;
-  }
-
-  .playerBench {
-    transform: translateY(-5.85rem);
-  }
-
-  .hand {
-    min-height: 12.25rem;
-  }
-}
-
 .dragPreview {
   position: fixed;
   top: 0;
@@ -287,8 +271,8 @@
 
 .controls {
   position: absolute;
-  right: max(1rem, env(safe-area-inset-right));
-  bottom: max(1rem, env(safe-area-inset-bottom));
+  right: 1rem;
+  bottom: 1rem;
   z-index: 35;
   display: flex;
   align-items: center;
@@ -321,7 +305,6 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
-  touch-action: manipulation;
 }
 
 .choicePanel {
@@ -331,10 +314,8 @@
   z-index: 60;
   display: grid;
   gap: 0.8rem;
-  width: min(50rem, calc(100vw - 2rem));
-  max-height: calc(100dvh - 2rem);
+  width: min(50rem, 1177px);
   padding: 1rem;
-  overflow: auto;
   transform: translate(-50%, -50%);
 }
 
@@ -358,7 +339,6 @@
   color: inherit;
   background: transparent;
   cursor: pointer;
-  touch-action: manipulation;
   transition: transform 0.16s ease;
 }
 
@@ -378,7 +358,6 @@
   color: var(--tcg-text);
   background: color-mix(in srgb, var(--tcg-bg-panel-strong) 82%, transparent);
   box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.25);
-  pointer-events: none;
 }
 
 .stanceChoice strong {
@@ -395,48 +374,4 @@
 .replacement {
   display: grid;
   gap: 0.55rem;
-}
-
-@media (max-height: 32rem) and (orientation: landscape) {
-  .settingsHud {
-    top: max(0.5rem, env(safe-area-inset-top));
-    left: max(0.5rem, env(safe-area-inset-left));
-  }
-
-  .choicePanel {
-    gap: 0.55rem;
-    padding: 0.75rem;
-  }
-
-  .choiceGrid {
-    grid-template-columns: repeat(3, minmax(8.5rem, 1fr));
-    gap: 0.6rem;
-  }
-
-  .stanceChoice {
-    min-height: 6.3rem;
-    padding: 0.65rem;
-  }
-
-  .stanceChoice strong {
-    font-size: 1rem;
-  }
-
-  .stanceChoice small {
-    display: -webkit-box;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    font-size: 0.74rem;
-  }
-
-  .controls {
-    gap: 0.7rem;
-    padding: 0.55rem 0.65rem;
-  }
-
-  .endTurn {
-    min-width: 7.5rem;
-    height: 2.5rem;
-  }
 }

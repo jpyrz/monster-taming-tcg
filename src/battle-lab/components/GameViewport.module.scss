@@ -32,6 +32,11 @@
   transform-origin: top left;
 }
 
+.stageOverlay {
+  position: absolute;
+  inset: 0;
+}
+
 @media (orientation: portrait) {
   .viewport::after {
     position: fixed;

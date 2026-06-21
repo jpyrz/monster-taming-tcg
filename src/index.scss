@@ -2,14 +2,9 @@
   color: var(--tcg-text);
   background: var(--tcg-bg-root);
   font-synthesis: none;
-  overscroll-behavior: none;
   text-rendering: optimizeLegibility;
-  touch-action: none;
-  user-select: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
 }
 
 * {
@@ -17,16 +12,10 @@
 }
 
 body {
-  position: fixed;
-  inset: 0;
-  width: 100%;
   min-width: 320px;
   min-height: 100dvh;
   margin: 0;
-  overflow: hidden;
   background: var(--tcg-bg-root);
-  overscroll-behavior: none;
-  touch-action: none;
 }
 
 button,

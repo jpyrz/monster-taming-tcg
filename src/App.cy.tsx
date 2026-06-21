@@ -174,27 +174,6 @@ describe('Monster Command TCG lab', () => {
     cy.get('[data-cy="focused-card"]').contains('Deal 3 damage')
   })
 
-  it('closes card details from an outside mobile pointer tap', () => {
-    cy.viewport(844, 390)
-    cy.mount(
-      <TcgThemeProvider>
-        <App />
-      </TcgThemeProvider>,
-    )
-
-    startWithStance('hunting')
-    cy.get('[data-cy="player-active-monster"]').click()
-    cy.get('[data-cy="focused-card"]').should('exist')
-    cy.get('[data-cy="focused-card"]').trigger('pointerdown', {
-      clientX: 24,
-      clientY: 24,
-      force: true,
-      pointerId: 9,
-      pointerType: 'touch',
-    })
-    cy.get('[data-cy="focused-card"]').should('not.exist')
-  })
-
   it('chooses a starting stance and resolves stance-modified commands', () => {
     mountApp()
 

@@ -37,11 +37,7 @@ type CardDetailOverlayProps = {
 
 export function CardDetailOverlay({ content, onClose }: CardDetailOverlayProps) {
   return (
-    <div
-      className={styles.overlay}
-      data-cy="focused-card"
-      onPointerDown={onClose}
-    >
+    <div className={styles.overlay} data-cy="focused-card">
       <button
         type="button"
         aria-label="Close card details"
@@ -54,25 +50,20 @@ export function CardDetailOverlay({ content, onClose }: CardDetailOverlayProps) 
           content.kind === 'bench' ? styles.benchContent : ''
         }`}
       >
-        <div
-          className={styles.cardSurface}
-          onPointerDown={(event) => event.stopPropagation()}
-        >
-          {content.kind === 'monster' ? (
-            <MonsterDetailCard
-              canChangeStance={content.canChangeStance}
-              currentStance={getCurrentStance(content.monster)}
-              definition={getMonsterDefinition(content.monster)}
-              freeStanceChange={content.freeStanceChange}
-              monster={content.monster}
-              onChangeStance={content.onChangeStance}
-            />
-          ) : content.kind === 'command' ? (
-            <CommandCardFace card={content.card} detail />
-          ) : (
-            <BenchCards label={content.label} monsters={content.monsters} />
-          )}
-        </div>
+        {content.kind === 'monster' ? (
+          <MonsterDetailCard
+            canChangeStance={content.canChangeStance}
+            currentStance={getCurrentStance(content.monster)}
+            definition={getMonsterDefinition(content.monster)}
+            freeStanceChange={content.freeStanceChange}
+            monster={content.monster}
+            onChangeStance={content.onChangeStance}
+          />
+        ) : content.kind === 'command' ? (
+          <CommandCardFace card={content.card} detail />
+        ) : (
+          <BenchCards label={content.label} monsters={content.monsters} />
+        )}
         <em className={styles.hint}>Tap outside to return.</em>
       </div>
     </div>
