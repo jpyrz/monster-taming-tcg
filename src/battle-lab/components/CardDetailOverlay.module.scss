@@ -1,0 +1,85 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 0.75rem;
+  color: inherit;
+  background: color-mix(in srgb, #05070d 70%, transparent);
+  backdrop-filter: blur(0.55rem);
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1rem;
+  max-height: calc(100dvh - 1.5rem);
+  place-items: center;
+}
+
+.benchContent {
+  width: min(44rem, 94vw);
+  max-height: min(42rem, 86vh);
+  overflow: auto;
+}
+
+.benchHeader {
+  display: grid;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.benchHeader span {
+  color: var(--tcg-accent);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.benchHeader strong {
+  font-family: Georgia, serif;
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+}
+
+.benchHeader p {
+  margin: 0;
+  color: var(--tcg-text-muted);
+  font-size: 0.88rem;
+}
+
+.benchSpread {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(13rem, 16rem));
+  justify-content: center;
+  gap: 1rem;
+}
+
+.hint {
+  position: relative;
+  z-index: 1;
+  margin-top: -0.2rem;
+  color: var(--tcg-text-muted);
+  font-size: 0.8rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+@media (max-width: 52rem) {
+  .benchSpread {
+    grid-template-columns: repeat(2, minmax(11rem, 13rem));
+  }
+}

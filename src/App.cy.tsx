@@ -27,6 +27,52 @@ function dragCardToActiveSlot(selector: string) {
   })
 }
 
+function pointerPlayCardToActiveSlot(selector: string) {
+  cy.get(selector).first().then(($card) => {
+    cy.get('[data-cy="player-active-slot"]').then(($slot) => {
+      const cardRect = $card[0].getBoundingClientRect()
+      const slotRect = $slot[0].getBoundingClientRect()
+      const startX = cardRect.left + cardRect.width / 2
+      const startY = cardRect.top + 12
+      const endX = slotRect.left + slotRect.width / 2
+      const endY = slotRect.top + slotRect.height / 2
+
+      cy.wrap($card)
+        .trigger('pointerdown', {
+          button: 0,
+          clientX: startX,
+          clientY: startY,
+          force: true,
+          pointerId: 7,
+          pointerType: 'touch',
+        })
+        .trigger('pointermove', {
+          clientX: endX,
+          clientY: endY,
+          force: true,
+          pointerId: 7,
+          pointerType: 'touch',
+        })
+
+      cy.get('[data-cy="mobile-drag-preview"]').then(($preview) => {
+        const previewRect = $preview[0].getBoundingClientRect()
+
+        expect(previewRect.width).to.be.greaterThan(0)
+        expect(previewRect.height).to.be.greaterThan(0)
+      })
+
+      cy.wrap($card)
+        .trigger('pointerup', {
+          clientX: endX,
+          clientY: endY,
+          force: true,
+          pointerId: 7,
+          pointerType: 'touch',
+        })
+    })
+  })
+}
+
 function chooseOpeningMonster(monsterId = 'cindermane') {
   cy.get(`[data-cy="choose-monster-${monsterId}"]`).click()
 }
@@ -49,12 +95,58 @@ describe('Monster Command TCG lab', () => {
     cy.get('[data-cy="choose-opening-hunting"]').should('be.visible')
   })
 
+  it('scales the full game stage into mobile landscape', () => {
+    cy.viewport(844, 390)
+    cy.mount(
+      <TcgThemeProvider>
+        <App />
+      </TcgThemeProvider>,
+    )
+
+    cy.get('[data-cy="game-stage-frame"]').then(($stageFrame) => {
+      const rect = $stageFrame[0].getBoundingClientRect()
+
+      expect(rect.width).to.be.closeTo(844, 1)
+      expect(rect.height).to.be.closeTo(390, 1)
+      expect(rect.left).to.be.closeTo(0, 1)
+      expect(rect.top).to.be.closeTo(0, 1)
+    })
+    cy.get('[data-cy="game-stage"]').then(($stage) => {
+      const rect = $stage[0].getBoundingClientRect()
+
+      expect(rect.width).to.be.closeTo(844, 1)
+      expect(rect.height).to.be.closeTo(390, 1)
+      expect($stage[0].clientWidth).to.be.greaterThan(1280)
+    })
+
+    cy.get('[data-cy="opening-monster-panel"]').should('be.visible')
+    cy.get('[data-cy="choose-monster-cindermane"]').should('be.visible')
+    cy.get('[data-cy="choose-monster-emberwhelp"]').should('be.visible')
+    cy.get('[data-cy="choose-monster-nightmoth"]').should('be.visible')
+  })
+
   it('starts a chosen monster on the battlefield', () => {
     mountApp()
 
     startWithStance('veiled', 'nightmoth')
     cy.get('[data-cy="player-active-monster"]').contains('Nightmoth')
-    cy.get('[data-cy="player-active-monster"]').contains('Veiled')
+    cy.get('[data-cy="player-active-monster"]').click()
+    cy.get('[data-cy="focused-card"]').contains('Veiled')
+  })
+
+  it('renders cards with the shared template frame', () => {
+    mountApp()
+
+    cy.get('[data-cy="choose-monster-cindermane"]').within(() => {
+      cy.get('img[src="/card-templates/blank-standard.png"]').should('exist')
+    })
+    startWithStance('hunting')
+    cy.get('[data-cy="player-active-monster"]').within(() => {
+      cy.get('img[src="/card-templates/blank-standard.png"]').should('exist')
+    })
+    cy.get('[data-cy="card-rake"]').first().within(() => {
+      cy.get('img[src="/card-templates/blank-standard.png"]').should('exist')
+    })
   })
 
   it('shows public bench monsters as cards', () => {
@@ -86,11 +178,13 @@ describe('Monster Command TCG lab', () => {
     mountApp()
 
     startWithStance('frenzy')
-    cy.get('[data-cy="player-active-monster"]').contains('Frenzy')
+    cy.get('[data-cy="player-active-monster"]').click()
+    cy.get('[data-cy="focused-card"]').contains('Frenzy')
+    cy.get('[data-cy="close-focused-card"]').click({ force: true })
     dragCardToActiveSlot('[data-cy="card-rake"]')
 
-    cy.get('[data-cy="rival-active-monster"]').contains('9/14 HP')
-    cy.get('[data-cy="player-active-monster"]').contains('17/18 HP')
+    cy.get('[data-cy="rival-active-monster"]').contains('9/14')
+    cy.get('[data-cy="player-active-monster"]').contains('17/18')
   })
 
   it('allows one free stance switch at the start of the turn', () => {
@@ -99,8 +193,8 @@ describe('Monster Command TCG lab', () => {
     startWithStance('hunting')
     cy.get('[data-cy="player-active-monster"]').click()
     cy.get('[data-cy="stance-ashcloak"]').click()
-    cy.get('[data-cy="player-active-monster"]').contains('Ashcloak')
     cy.get('[data-cy="player-active-monster"]').click()
+    cy.get('[data-cy="focused-card"]').contains('Ashcloak')
     cy.get('[data-cy="stance-frenzy"]').should('be.disabled')
   })
 
@@ -116,12 +210,28 @@ describe('Monster Command TCG lab', () => {
     cy.get('[data-cy="card-brace"]').should('have.attr', 'aria-disabled', 'true')
   })
 
+  it('plays a hand card with a mobile pointer drag', () => {
+    cy.viewport(844, 390)
+    cy.mount(
+      <TcgThemeProvider>
+        <App />
+      </TcgThemeProvider>,
+    )
+
+    startWithStance('hunting')
+    pointerPlayCardToActiveSlot('[data-cy="card-rake"]')
+
+    cy.get('[data-cy="rival-active-monster"]').contains('11/14')
+    cy.get('[data-cy="focus-count"]').contains('2')
+  })
+
   it('attaches adaptations to the active monster', () => {
     mountApp()
 
     startWithStance('hunting')
     dragCardToActiveSlot('[data-cy="card-hardenedScar"]')
-    cy.get('[data-cy="player-active-monster"]').contains('Hardened Scar')
+    cy.get('[data-cy="player-active-monster"]').click()
+    cy.get('[data-cy="focused-card"]').contains('Hardened Scar')
   })
 
   it('replaces a defeated rival monster from the bench', () => {

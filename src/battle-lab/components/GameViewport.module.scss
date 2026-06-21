@@ -1,0 +1,58 @@
+.viewport {
+  --stage-height: 720px;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px) 0 0 / 5.5rem 5.5rem,
+    linear-gradient(0deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 5.5rem 5.5rem,
+    radial-gradient(ellipse at 50% 48%, rgba(255, 255, 255, 0.08), transparent 9rem),
+    radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--tcg-accent) 10%, transparent), transparent 27rem),
+    var(--tcg-bg-field);
+}
+
+.stageFrame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--stage-frame-width);
+  height: var(--stage-frame-height);
+  overflow: visible;
+  transform: translate(-50%, -50%);
+}
+
+.stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--stage-width);
+  height: var(--stage-height);
+  overflow: hidden;
+  transform: scale(var(--stage-scale));
+  transform-origin: top left;
+}
+
+.stageOverlay {
+  position: absolute;
+  inset: 0;
+}
+
+@media (orientation: portrait) {
+  .viewport::after {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    color: var(--tcg-text);
+    background:
+      radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--tcg-accent) 16%, transparent), transparent 18rem),
+      color-mix(in srgb, var(--tcg-bg-root) 94%, black);
+    content: 'Rotate to landscape to play';
+    font-family: Georgia, serif;
+    font-size: clamp(1.6rem, 9vw, 3rem);
+    text-align: center;
+    pointer-events: none;
+  }
+}

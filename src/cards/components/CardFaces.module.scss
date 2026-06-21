@@ -1,0 +1,157 @@
+.fieldCard,
+.handCard,
+.detailCard,
+.monsterDetailCard,
+.choiceCard {
+  width: var(--card-width, 9rem);
+}
+
+.fieldCard {
+  --card-width: 8.4rem;
+}
+
+.handCard {
+  --card-width: 9rem;
+}
+
+.detailCard {
+  --card-width: min(21rem, 86vw, calc((100dvh - 3.75rem) * 0.707));
+}
+
+.monsterDetailCard {
+  --card-width: min(23rem, 88vw, calc((100dvh - 3.75rem) * 0.707));
+}
+
+.choiceCard {
+  --card-width: 15rem;
+}
+
+.rulesStack {
+  display: grid;
+  gap: 0.28rem;
+}
+
+.eyebrow {
+  overflow: hidden;
+  color: rgba(36, 21, 13, 0.66);
+  font-size: 0.68em;
+  font-weight: 950;
+  letter-spacing: 0.09em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.rulesText,
+.smallText,
+.tagLine {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+}
+
+.rulesText {
+  -webkit-line-clamp: 5;
+}
+
+.smallText {
+  color: rgba(36, 21, 13, 0.72);
+  font-size: 0.86em;
+  line-height: 1.22;
+  -webkit-line-clamp: 2;
+}
+
+.tagLine {
+  color: rgba(36, 21, 13, 0.72);
+  font-size: 0.76em;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  -webkit-line-clamp: 1;
+}
+
+.health {
+  position: absolute;
+  right: 13.8%;
+  bottom: 13.8%;
+  left: 13.8%;
+  z-index: 5;
+  height: 0.38rem;
+  overflow: hidden;
+  border-radius: 999rem;
+  background: rgba(36, 21, 13, 0.34);
+}
+
+.health i {
+  display: block;
+  width: var(--health-value);
+  height: 100%;
+  border-radius: inherit;
+  background: #2f9e44;
+}
+
+.stanceList {
+  display: grid;
+  gap: 0.26rem;
+}
+
+.stanceList > span,
+.stanceList > button {
+  display: grid;
+  gap: 0.08rem;
+  min-width: 0;
+  padding: 0.26rem 0.32rem;
+  border: 1px solid rgba(36, 21, 13, 0.22);
+  border-radius: 0.18rem;
+  color: #24150d;
+  background: rgba(255, 244, 214, 0.32);
+  text-align: left;
+}
+
+.stanceList > button {
+  cursor: pointer;
+}
+
+.stanceList > button:disabled {
+  cursor: default;
+  opacity: 0.64;
+}
+
+.stanceList > span[data-current],
+.stanceList > button[data-current] {
+  border-color: rgba(36, 21, 13, 0.58);
+  background: rgba(255, 244, 214, 0.56);
+}
+
+.stanceList strong {
+  overflow: hidden;
+  font-family: Georgia, serif;
+  font-size: 0.98em;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stanceList small {
+  display: -webkit-box;
+  overflow: hidden;
+  color: rgba(36, 21, 13, 0.72);
+  font-size: 0.78em;
+  line-height: 1.18;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.choiceCard .stanceList small {
+  -webkit-line-clamp: 1;
+}
+
+.detailCard .rulesText,
+.monsterDetailCard .rulesText {
+  -webkit-line-clamp: 4;
+}
+
+.statBadge {
+  white-space: nowrap;
+}

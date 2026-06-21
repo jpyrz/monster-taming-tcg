@@ -10,6 +10,11 @@ import {
   type Owner,
   type StanceDefinition,
 } from './cards'
+import {
+  getCommandSpeedBonus,
+  getDamageReduction,
+  getTaggedStanceAmount,
+} from './effects/stanceEffects'
 
 export type MonsterInstance = {
   instanceId: string
@@ -606,22 +611,11 @@ function resolveKnockouts(state: BattleState): BattleState {
 }
 
 function getCommandSpeed(tamer: TamerState, card: CardDefinition) {
-  const stance = getCurrentStance(getActiveMonster(tamer))
-  if (!stance) {
-    return 0
-  }
-
-  return stance.effects.reduce((total, effect) => {
-    if (
-      effect.kind === 'speedBonus' &&
-      card.tags.includes(effect.tag) &&
-      (!effect.firstOnly || !tamer.usedStrikeThisTurn)
-    ) {
-      return total + effect.amount
-    }
-
-    return total
-  }, 0)
+  return getCommandSpeedBonus({
+    card,
+    stance: getCurrentStance(getActiveMonster(tamer)),
+    usedStrikeThisTurn: tamer.usedStrikeThisTurn,
+  })
 }
 
 function getTagAmount(
@@ -629,33 +623,15 @@ function getTagAmount(
   card: CardDefinition,
   kind: 'damageBonus' | 'focusGain' | 'guardBonus' | 'recoil',
 ) {
-  const stance = getCurrentStance(getActiveMonster(tamer))
-  if (!stance) {
-    return 0
-  }
-
-  return stance.effects.reduce((total, effect) => {
-    if (effect.kind === kind && card.tags.includes(effect.tag)) {
-      return total + effect.amount
-    }
-
-    return total
-  }, 0)
+  return getTaggedStanceAmount({
+    card,
+    kind,
+    stance: getCurrentStance(getActiveMonster(tamer)),
+  })
 }
 
 function getStanceDamageReduction(tamer: TamerState) {
-  const stance = getCurrentStance(getActiveMonster(tamer))
-  if (!stance) {
-    return 0
-  }
-
-  return stance.effects.reduce((total, effect) => {
-    if (effect.kind === 'damageReduction') {
-      return total + effect.amount
-    }
-
-    return total
-  }, 0)
+  return getDamageReduction(getCurrentStance(getActiveMonster(tamer)))
 }
 
 function isValidStance(monster: MonsterInstance, stanceId: string) {
