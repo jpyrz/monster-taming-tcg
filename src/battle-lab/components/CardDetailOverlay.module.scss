@@ -27,6 +27,11 @@
   gap: 1rem;
   max-height: calc(100dvh - 1.5rem);
   place-items: center;
+  pointer-events: none;
+}
+
+.cardSurface {
+  pointer-events: auto;
 }
 
 .benchContent {
@@ -78,6 +83,7 @@
   letter-spacing: 0.08em;
   text-align: center;
   text-transform: uppercase;
+  pointer-events: none;
 }
 
 @media (max-width: 52rem) {

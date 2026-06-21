@@ -40,11 +40,7 @@ export function CardDetailOverlay({ content, onClose }: CardDetailOverlayProps) 
     <div
       className={styles.overlay}
       data-cy="focused-card"
-      onPointerDown={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose()
-        }
-      }}
+      onPointerDown={onClose}
     >
       <button
         type="button"
@@ -57,22 +53,26 @@ export function CardDetailOverlay({ content, onClose }: CardDetailOverlayProps) 
         className={`${styles.content} ${
           content.kind === 'bench' ? styles.benchContent : ''
         }`}
-        onPointerDown={(event) => event.stopPropagation()}
       >
-        {content.kind === 'monster' ? (
-          <MonsterDetailCard
-            canChangeStance={content.canChangeStance}
-            currentStance={getCurrentStance(content.monster)}
-            definition={getMonsterDefinition(content.monster)}
-            freeStanceChange={content.freeStanceChange}
-            monster={content.monster}
-            onChangeStance={content.onChangeStance}
-          />
-        ) : content.kind === 'command' ? (
-          <CommandCardFace card={content.card} detail />
-        ) : (
-          <BenchCards label={content.label} monsters={content.monsters} />
-        )}
+        <div
+          className={styles.cardSurface}
+          onPointerDown={(event) => event.stopPropagation()}
+        >
+          {content.kind === 'monster' ? (
+            <MonsterDetailCard
+              canChangeStance={content.canChangeStance}
+              currentStance={getCurrentStance(content.monster)}
+              definition={getMonsterDefinition(content.monster)}
+              freeStanceChange={content.freeStanceChange}
+              monster={content.monster}
+              onChangeStance={content.onChangeStance}
+            />
+          ) : content.kind === 'command' ? (
+            <CommandCardFace card={content.card} detail />
+          ) : (
+            <BenchCards label={content.label} monsters={content.monsters} />
+          )}
+        </div>
         <em className={styles.hint}>Tap outside to return.</em>
       </div>
     </div>

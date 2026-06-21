@@ -79,64 +79,7 @@ export function MonsterLabPage() {
 
   return (
     <main className={styles.appShell}>
-      <GameViewport
-        overlays={
-          <>
-            <SettingsMenu
-              log={state.log}
-              onReset={resetBattle}
-              onThemeChange={setThemeId}
-              onToggle={() => setSettingsOpen((isOpen) => !isOpen)}
-              open={settingsOpen}
-              themeId={themeId}
-              themeOptions={themeOptions}
-            />
-
-            <ChoiceOverlays
-              onOpeningMonster={(rosterIndex) =>
-                setState((currentState) =>
-                  chooseOpeningMonster(currentState, rosterIndex),
-                )
-              }
-              onOpeningStance={(stanceId) =>
-                setState((currentState) =>
-                  chooseOpeningStance(currentState, stanceId),
-                )
-              }
-              onReplacement={(rosterIndex, stanceId) =>
-                setState((currentState) =>
-                  chooseReplacement(currentState, rosterIndex, stanceId),
-                )
-              }
-              state={state}
-            />
-
-            {state.phase === 'player-turn' ? (
-              <PlayerHand
-                draggedHandIndex={draggedHandIndex}
-                focusedHandIndex={
-                  focusedCard?.kind === 'hand' ? focusedCard.index : undefined
-                }
-                onBenchClick={() =>
-                  setFocusedCard({ kind: 'bench', owner: 'player' })
-                }
-                onCardClick={(index) => setFocusedCard({ kind: 'hand', index })}
-                onDragEnd={() => setDraggedHandIndex(null)}
-                onDragStart={handleHandDragStart}
-                onPointerPlay={playDraggedCard}
-                state={state}
-              />
-            ) : null}
-
-            <TurnControls
-              onEndTurn={() =>
-                setState((currentState) => endPlayerTurn(currentState))
-              }
-              state={state}
-            />
-          </>
-        }
-      >
+      <GameViewport>
         <Playmat
           onActiveDrop={handleActiveDrop}
           onBenchClick={(owner) => setFocusedCard({ kind: 'bench', owner })}
@@ -146,6 +89,55 @@ export function MonsterLabPage() {
           state={state}
         />
       </GameViewport>
+
+      <SettingsMenu
+        log={state.log}
+        onReset={resetBattle}
+        onThemeChange={setThemeId}
+        onToggle={() => setSettingsOpen((isOpen) => !isOpen)}
+        open={settingsOpen}
+        themeId={themeId}
+        themeOptions={themeOptions}
+      />
+
+      <ChoiceOverlays
+        onOpeningMonster={(rosterIndex) =>
+          setState((currentState) =>
+            chooseOpeningMonster(currentState, rosterIndex),
+          )
+        }
+        onOpeningStance={(stanceId) =>
+          setState((currentState) =>
+            chooseOpeningStance(currentState, stanceId),
+          )
+        }
+        onReplacement={(rosterIndex, stanceId) =>
+          setState((currentState) =>
+            chooseReplacement(currentState, rosterIndex, stanceId),
+          )
+        }
+        state={state}
+      />
+
+      {state.phase === 'player-turn' ? (
+        <PlayerHand
+          draggedHandIndex={draggedHandIndex}
+          focusedHandIndex={
+            focusedCard?.kind === 'hand' ? focusedCard.index : undefined
+          }
+          onBenchClick={() => setFocusedCard({ kind: 'bench', owner: 'player' })}
+          onCardClick={(index) => setFocusedCard({ kind: 'hand', index })}
+          onDragEnd={() => setDraggedHandIndex(null)}
+          onDragStart={handleHandDragStart}
+          onPointerPlay={playDraggedCard}
+          state={state}
+        />
+      ) : null}
+
+      <TurnControls
+        onEndTurn={() => setState((currentState) => endPlayerTurn(currentState))}
+        state={state}
+      />
 
       {focusedCardContent ? (
         <CardDetailOverlay

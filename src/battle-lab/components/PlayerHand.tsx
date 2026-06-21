@@ -57,6 +57,7 @@ export function PlayerHand({
       return
     }
 
+    event.preventDefault()
     pointerState.current = {
       dragging: false,
       index: handIndex,
@@ -117,6 +118,12 @@ export function PlayerHand({
     setDragPreview(null)
 
     if (!current.dragging) {
+      suppressClick.current = true
+      event.preventDefault()
+      onCardClick(current.index)
+      window.setTimeout(() => {
+        suppressClick.current = false
+      }, 0)
       return
     }
 

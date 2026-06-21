@@ -6,10 +6,9 @@ const baseStageHeight = 720
 
 type GameViewportProps = {
   children: ReactNode
-  overlays?: ReactNode
 }
 
-export function GameViewport({ children, overlays }: GameViewportProps) {
+export function GameViewport({ children }: GameViewportProps) {
   const stageMetrics = useStageMetrics()
   const stageFrameStyle = {
     '--stage-frame-height': `${stageMetrics.frameHeight}px`,
@@ -34,7 +33,6 @@ export function GameViewport({ children, overlays }: GameViewportProps) {
           style={stageStyle}
         >
           {children}
-          {overlays ? <div className={styles.stageOverlay}>{overlays}</div> : null}
         </div>
       </div>
     </div>
