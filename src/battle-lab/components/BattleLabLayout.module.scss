@@ -252,6 +252,20 @@
   opacity: 0.62;
 }
 
+@media (pointer: coarse) {
+  .handZone {
+    bottom: -5.7rem;
+  }
+
+  .playerBench {
+    transform: translateY(-5.85rem);
+  }
+
+  .hand {
+    min-height: 12.25rem;
+  }
+}
+
 .dragPreview {
   position: fixed;
   top: 0;

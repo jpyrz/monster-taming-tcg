@@ -83,6 +83,16 @@ export function PlayerHand({
       event.clientY - current.startY,
     )
 
+    if (current.dragging) {
+      setDragPreview({
+        cardId: state.player.hand[current.index],
+        x: event.clientX,
+        y: event.clientY,
+      })
+      event.preventDefault()
+      return
+    }
+
     if (distance > 10) {
       current.dragging = true
       suppressClick.current = true
@@ -174,6 +184,11 @@ export function PlayerHand({
               }
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
+              onPointerCancel={() => {
+                pointerState.current = null
+                setPointerDragIndex(null)
+                setDragPreview(null)
+              }}
               style={
                 {
                   '--card-index': index,

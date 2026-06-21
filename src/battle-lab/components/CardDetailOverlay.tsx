@@ -37,7 +37,15 @@ type CardDetailOverlayProps = {
 
 export function CardDetailOverlay({ content, onClose }: CardDetailOverlayProps) {
   return (
-    <div className={styles.overlay} data-cy="focused-card">
+    <div
+      className={styles.overlay}
+      data-cy="focused-card"
+      onPointerDown={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose()
+        }
+      }}
+    >
       <button
         type="button"
         aria-label="Close card details"
@@ -49,6 +57,7 @@ export function CardDetailOverlay({ content, onClose }: CardDetailOverlayProps) 
         className={`${styles.content} ${
           content.kind === 'bench' ? styles.benchContent : ''
         }`}
+        onPointerDown={(event) => event.stopPropagation()}
       >
         {content.kind === 'monster' ? (
           <MonsterDetailCard
