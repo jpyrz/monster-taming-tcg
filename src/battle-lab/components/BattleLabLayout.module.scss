@@ -106,6 +106,24 @@
   line-height: 1.25;
 }
 
+.debugToggle {
+  min-height: 2.25rem;
+  border: 1px solid var(--tcg-border);
+  border-radius: 0.3rem;
+  color: var(--tcg-text);
+  background: color-mix(in srgb, var(--tcg-surface) 82%, transparent);
+  font-size: 0.75rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.debugToggle[data-active] {
+  color: var(--tcg-on-accent);
+  background: var(--tcg-accent);
+}
+
 .opponentHand {
   position: absolute;
   top: -0.65rem;
@@ -253,17 +271,13 @@
 }
 
 .dragPreview {
-  position: fixed;
-  top: 0;
-  left: 0;
+  position: absolute;
+  top: var(--drag-preview-y);
+  left: var(--drag-preview-x);
   z-index: 200;
   width: 9rem;
   pointer-events: none;
-  transform:
-    translate3d(var(--drag-preview-x), var(--drag-preview-y), 0)
-    translate(-50%, -50%)
-    rotate(0deg)
-    scale(1.05);
+  transform: translate(-50%, -50%) rotate(0deg) scale(1.05);
   filter:
     drop-shadow(0 1.2rem 1.6rem rgba(0, 0, 0, 0.58))
     drop-shadow(0 0 1rem color-mix(in srgb, var(--tcg-accent) 30%, transparent));
@@ -374,4 +388,69 @@
 .replacement {
   display: grid;
   gap: 0.55rem;
+}
+
+.touchDebug {
+  position: absolute;
+  top: 3.5rem;
+  left: 0.75rem;
+  z-index: 120;
+  display: grid;
+  gap: 0.2rem;
+  min-width: 13rem;
+  padding: 0.65rem;
+  border: 1px solid var(--tcg-border);
+  color: var(--tcg-text);
+  background: color-mix(in srgb, var(--tcg-bg-panel-strong) 88%, transparent);
+  box-shadow: 0 1rem 2rem var(--tcg-shadow);
+  pointer-events: none;
+}
+
+.touchDebug strong {
+  color: var(--tcg-accent);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.touchDebug span {
+  font-size: 0.76rem;
+  line-height: 1.2;
+}
+
+.touchCrosshair {
+  position: absolute;
+  top: var(--touch-debug-y);
+  left: var(--touch-debug-x);
+  z-index: 121;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--tcg-accent);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.touchCrosshair::before,
+.touchCrosshair::after {
+  position: absolute;
+  content: '';
+  background: var(--tcg-accent);
+}
+
+.touchCrosshair::before {
+  top: 50%;
+  left: -0.45rem;
+  width: 2rem;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.touchCrosshair::after {
+  top: -0.45rem;
+  left: 50%;
+  width: 2px;
+  height: 2rem;
+  transform: translateX(-50%);
 }

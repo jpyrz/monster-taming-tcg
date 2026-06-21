@@ -1,4 +1,6 @@
+import { useRef } from 'react'
 import type { BattleState } from '../../game/battle'
+import { useBoardHitZone } from '../input/useBoardInput'
 import styles from './BattleLabLayout.module.scss'
 
 type TurnControlsProps = {
@@ -7,6 +9,16 @@ type TurnControlsProps = {
 }
 
 export function TurnControls({ onEndTurn, state }: TurnControlsProps) {
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+
+  useBoardHitZone({
+    enabled: state.phase === 'player-turn',
+    id: 'end-turn',
+    onTap: onEndTurn,
+    priority: 65,
+    ref: buttonRef,
+  })
+
   if (state.phase !== 'player-turn') {
     return null
   }
@@ -25,7 +37,13 @@ export function TurnControls({ onEndTurn, state }: TurnControlsProps) {
         <strong>{state.player.discard.length}</strong>
         <span>Discard</span>
       </div>
-      <button type="button" className={styles.endTurn} onClick={onEndTurn}>
+      <button
+        ref={buttonRef}
+        type="button"
+        className={styles.endTurn}
+        data-cy="end-turn-button"
+        onClick={onEndTurn}
+      >
         End turn
       </button>
     </div>

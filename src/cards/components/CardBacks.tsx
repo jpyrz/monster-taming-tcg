@@ -1,20 +1,22 @@
+import { forwardRef, type Ref } from 'react'
 import styles from './CardBacks.module.scss'
 
 export function CardBack({ className }: { className?: string }) {
   return <span className={`${styles.cardBack} ${className ?? ''}`} />
 }
 
-export function DeckStack({
-  ariaLabel,
-  className,
-  dataCy,
-  onClick,
-}: {
+export const DeckStack = forwardRef<HTMLButtonElement | HTMLSpanElement, {
   ariaLabel: string
   className?: string
   dataCy?: string
   onClick?: () => void
-}) {
+}>(
+function DeckStack({
+  ariaLabel,
+  className,
+  dataCy,
+  onClick,
+}, ref) {
   const content = (
     <>
       <i />
@@ -25,6 +27,7 @@ export function DeckStack({
   if (onClick) {
     return (
       <button
+        ref={ref as Ref<HTMLButtonElement>}
         type="button"
         aria-label={ariaLabel}
         className={`${styles.deckStack} ${className ?? ''}`}
@@ -38,6 +41,7 @@ export function DeckStack({
 
   return (
     <span
+      ref={ref as Ref<HTMLSpanElement>}
       className={`${styles.deckStack} ${className ?? ''}`}
       aria-label={ariaLabel}
       data-cy={dataCy}
@@ -46,3 +50,4 @@ export function DeckStack({
     </span>
   )
 }
+)

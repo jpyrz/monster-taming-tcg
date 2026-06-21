@@ -1,4 +1,10 @@
 import App from './App'
+import {
+  boardToScreen,
+  screenRectToBoardRect,
+  screenToBoard,
+  type StageMetrics,
+} from './battle-lab/input/boardCoordinates'
 import { TcgThemeProvider } from './theme/TcgThemeProvider'
 
 function mountApp() {
@@ -73,6 +79,35 @@ function pointerPlayCardToActiveSlot(selector: string) {
   })
 }
 
+function pointerTap(selector: string) {
+  pointerTapAt(selector, 0.5, 0.5)
+}
+
+function pointerTapAt(selector: string, xRatio: number, yRatio: number) {
+  cy.get(selector).then(($element) => {
+    const rect = $element[0].getBoundingClientRect()
+    const clientX = rect.left + rect.width * xRatio
+    const clientY = rect.top + rect.height * yRatio
+
+    cy.wrap($element)
+      .trigger('pointerdown', {
+        button: 0,
+        clientX,
+        clientY,
+        force: true,
+        pointerId: 9,
+        pointerType: 'touch',
+      })
+      .trigger('pointerup', {
+        clientX,
+        clientY,
+        force: true,
+        pointerId: 9,
+        pointerType: 'touch',
+      })
+  })
+}
+
 function chooseOpeningMonster(monsterId = 'cindermane') {
   cy.get(`[data-cy="choose-monster-${monsterId}"]`).click()
 }
@@ -83,6 +118,37 @@ function startWithStance(stanceId: string, monsterId = 'cindermane') {
 }
 
 describe('Monster Command TCG lab', () => {
+  it('maps screen and board coordinates through the stage metrics', () => {
+    const metrics: StageMetrics = {
+      frameHeight: 390,
+      frameLeft: 0,
+      frameTop: 0,
+      frameWidth: 844,
+      logicalHeight: 720,
+      logicalWidth: 1558.1538461538462,
+      scale: 390 / 720,
+    }
+
+    expect(screenToBoard(metrics, 422, 195)).to.deep.equal({
+      x: 779.0769230769231,
+      y: 360,
+    })
+    expect(boardToScreen(metrics, { x: 779.0769230769231, y: 360 })).to.deep.equal({
+      x: 422,
+      y: 195,
+    })
+
+    const boardRect = screenRectToBoardRect(
+      metrics,
+      new DOMRect(100, 50, 200, 120),
+    )
+
+    expect(boardRect.x).to.be.closeTo(184.62, 0.01)
+    expect(boardRect.y).to.be.closeTo(92.31, 0.01)
+    expect(boardRect.width).to.be.closeTo(369.23, 0.01)
+    expect(boardRect.height).to.be.closeTo(221.54, 0.01)
+  })
+
   it('starts by asking which monster enters the battlefield', () => {
     mountApp()
 
@@ -134,6 +200,22 @@ describe('Monster Command TCG lab', () => {
     cy.get('[data-cy="focused-card"]').contains('Veiled')
   })
 
+  it('chooses opening monster and stance from touch taps', () => {
+    cy.viewport(844, 390)
+    cy.mount(
+      <TcgThemeProvider>
+        <App />
+      </TcgThemeProvider>,
+    )
+
+    pointerTap('[data-cy="choose-monster-cindermane"]')
+    pointerTap('[data-cy="choose-opening-frenzy"]')
+
+    cy.get('[data-cy="player-active-monster"]').contains('Cindermane')
+    cy.get('[data-cy="player-active-monster"]').click()
+    cy.get('[data-cy="focused-card"]').contains('Frenzy')
+  })
+
   it('renders cards with the shared template frame', () => {
     mountApp()
 
@@ -157,6 +239,21 @@ describe('Monster Command TCG lab', () => {
     cy.get('[data-cy="focused-card"]').contains('Shellmaw')
     cy.get('[data-cy="focused-card"]').contains('Cindermane')
     cy.get('[data-cy="close-focused-card"]').click({ force: true })
+  })
+
+  it('opens and closes bench details from touch taps', () => {
+    cy.viewport(844, 390)
+    cy.mount(
+      <TcgThemeProvider>
+        <App />
+      </TcgThemeProvider>,
+    )
+
+    chooseOpeningMonster()
+    pointerTap('[data-cy="rival-bench-stack"]')
+    cy.get('[data-cy="focused-card"]').contains('Shellmaw')
+    pointerTapAt('[data-cy="focused-card"]', 0.08, 0.12)
+    cy.get('[data-cy="focused-card"]').should('not.exist')
   })
 
   it('opens card details for monsters and commands', () => {
@@ -223,6 +320,24 @@ describe('Monster Command TCG lab', () => {
 
     cy.get('[data-cy="rival-active-monster"]').contains('11/14')
     cy.get('[data-cy="focus-count"]').contains('2')
+  })
+
+  it('reports touch debug zone matches', () => {
+    cy.viewport(844, 390)
+    cy.mount(
+      <TcgThemeProvider>
+        <App />
+      </TcgThemeProvider>,
+    )
+
+    startWithStance('hunting')
+    cy.get('[data-cy="settings-toggle"]').click()
+    cy.get('[data-cy="touch-debug-toggle"]').click()
+    pointerTap('[data-cy="end-turn-button"]')
+
+    cy.get('[data-cy="touch-debug-panel"]').contains('Zone: end-turn')
+    cy.get('[data-cy="touch-debug-panel"]').contains('Action: tap')
+    cy.get('[data-cy="touch-debug-crosshair"]').should('be.visible')
   })
 
   it('attaches adaptations to the active monster', () => {

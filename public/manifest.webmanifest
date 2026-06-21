@@ -1,0 +1,19 @@
+{
+  "name": "Monster Taming TCG",
+  "short_name": "Monster TCG",
+  "description": "A prototype monster-command trading card game.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#07101f",
+  "theme_color": "#228be6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "48x48",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

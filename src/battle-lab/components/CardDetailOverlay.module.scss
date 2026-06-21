@@ -1,5 +1,5 @@
 .overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 80;
   display: grid;
@@ -23,13 +23,13 @@
   z-index: 1;
   display: grid;
   gap: 1rem;
-  max-height: calc(100dvh - 1.5rem);
+  max-height: calc(720px - 1.5rem);
   place-items: center;
 }
 
 .benchContent {
   width: min(44rem, 94vw);
-  max-height: min(42rem, 86vh);
+  max-height: min(42rem, 640px);
   overflow: auto;
 }
 

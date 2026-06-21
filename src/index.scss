@@ -2,9 +2,11 @@
   color: var(--tcg-text);
   background: var(--tcg-bg-root);
   font-synthesis: none;
+  overscroll-behavior: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
 }
 
 * {
@@ -15,7 +17,11 @@ body {
   min-width: 320px;
   min-height: 100dvh;
   margin: 0;
+  overflow: hidden;
   background: var(--tcg-bg-root);
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 button,

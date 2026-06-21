@@ -1,3 +1,4 @@
+import { useRef, type ReactNode } from 'react'
 import { MonsterChoiceCard } from '../../cards/components/MonsterCards'
 import {
   getActiveMonsterDefinition,
@@ -5,6 +6,7 @@ import {
   getMonsterDefinition,
   type BattleState,
 } from '../../game/battle'
+import { useBoardHitZone } from '../input/useBoardInput'
 import styles from './BattleLabLayout.module.scss'
 
 type ChoiceOverlaysProps = {
@@ -30,10 +32,8 @@ export function ChoiceOverlays({
             const definition = getMonsterDefinition(monster)
 
             return (
-              <button
+              <ChoiceButton
                 key={monster.instanceId}
-                type="button"
-                className={styles.choiceCardButton}
                 data-cy={`choose-monster-${definition.id}`}
                 onClick={() => onOpeningMonster(rosterIndex)}
               >
@@ -42,7 +42,7 @@ export function ChoiceOverlays({
                   label="Starter"
                   monster={monster}
                 />
-              </button>
+              </ChoiceButton>
             )
           })}
         </div>
@@ -59,10 +59,8 @@ export function ChoiceOverlays({
         <h2>Choose how {active.name} enters the field.</h2>
         <div className={styles.choiceGrid}>
           {active.stances.map((stance) => (
-            <button
+            <ChoiceButton
               key={stance.id}
-              type="button"
-              className={styles.choiceCardButton}
               data-cy={`choose-opening-${stance.id}`}
               onClick={() => onOpeningStance(stance.id)}
             >
@@ -70,7 +68,7 @@ export function ChoiceOverlays({
                 <strong>{stance.name}</strong>
                 <small>{stance.text}</small>
               </span>
-            </button>
+            </ChoiceButton>
           ))}
         </div>
       </section>
@@ -87,10 +85,8 @@ export function ChoiceOverlays({
             <strong>{option.definition.name}</strong>
             <div className={styles.choiceGrid}>
               {option.definition.stances.map((stance) => (
-                <button
+                <ChoiceButton
                   key={stance.id}
-                  type="button"
-                  className={styles.choiceCardButton}
                   data-cy={`replace-${option.definition.id}-${stance.id}`}
                   onClick={() => onReplacement(option.index, stance.id)}
                 >
@@ -98,7 +94,7 @@ export function ChoiceOverlays({
                     <strong>{stance.name}</strong>
                     <small>{stance.text}</small>
                   </span>
-                </button>
+                </ChoiceButton>
               ))}
             </div>
           </div>
@@ -108,4 +104,35 @@ export function ChoiceOverlays({
   }
 
   return null
+}
+
+function ChoiceButton({
+  children,
+  'data-cy': dataCy,
+  onClick,
+}: {
+  children: ReactNode
+  'data-cy': string
+  onClick: () => void
+}) {
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+
+  useBoardHitZone({
+    id: dataCy,
+    onTap: onClick,
+    priority: 60,
+    ref: buttonRef,
+  })
+
+  return (
+    <button
+      ref={buttonRef}
+      type="button"
+      className={styles.choiceCardButton}
+      data-cy={dataCy}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  )
 }

@@ -1,4 +1,4 @@
-import { useState, type DragEvent } from 'react'
+import { useState, type CSSProperties, type DragEvent } from 'react'
 import { useTcgTheme } from '../theme/themeContext'
 import {
   chooseOpeningMonster,
@@ -24,6 +24,7 @@ import { Playmat } from './components/Playmat'
 import { PlayerHand } from './components/PlayerHand'
 import { SettingsMenu } from './components/SettingsMenu'
 import { TurnControls } from './components/TurnControls'
+import { useBoardInput } from './input/useBoardInput'
 import styles from './components/BattleLabLayout.module.scss'
 
 type FocusedCard =
@@ -36,6 +37,7 @@ export function MonsterLabPage() {
   const [focusedCard, setFocusedCard] = useState<FocusedCard | null>(null)
   const [draggedHandIndex, setDraggedHandIndex] = useState<number | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [touchDebug, setTouchDebug] = useState(false)
   const { themeId, setThemeId, themeOptions } = useTcgTheme()
   const focusedCardContent = getFocusedCardContent({
     focusedCard,
@@ -84,10 +86,12 @@ export function MonsterLabPage() {
           <>
             <SettingsMenu
               log={state.log}
+              onDebugChange={setTouchDebug}
               onReset={resetBattle}
               onThemeChange={setThemeId}
               onToggle={() => setSettingsOpen((isOpen) => !isOpen)}
               open={settingsOpen}
+              touchDebug={touchDebug}
               themeId={themeId}
               themeOptions={themeOptions}
             />
@@ -123,7 +127,6 @@ export function MonsterLabPage() {
                 onCardClick={(index) => setFocusedCard({ kind: 'hand', index })}
                 onDragEnd={() => setDraggedHandIndex(null)}
                 onDragStart={handleHandDragStart}
-                onPointerPlay={playDraggedCard}
                 state={state}
               />
             ) : null}
@@ -134,11 +137,21 @@ export function MonsterLabPage() {
               }
               state={state}
             />
+
+            {focusedCardContent ? (
+              <CardDetailOverlay
+                content={focusedCardContent}
+                onClose={() => setFocusedCard(null)}
+              />
+            ) : null}
+
+            {touchDebug ? <TouchDebugOverlay /> : null}
           </>
         }
       >
         <Playmat
           onActiveDrop={handleActiveDrop}
+          onBoardCardDrop={playDraggedCard}
           onBenchClick={(owner) => setFocusedCard({ kind: 'bench', owner })}
           onMonsterClick={(owner, rosterIndex) =>
             setFocusedCard({ kind: 'monster', owner, rosterIndex })
@@ -146,13 +159,6 @@ export function MonsterLabPage() {
           state={state}
         />
       </GameViewport>
-
-      {focusedCardContent ? (
-        <CardDetailOverlay
-          content={focusedCardContent}
-          onClose={() => setFocusedCard(null)}
-        />
-      ) : null}
     </main>
   )
 }
@@ -206,4 +212,42 @@ function getBenchMonsters(tamer: TamerState) {
   return tamer.roster
     .map((monster: MonsterInstance, rosterIndex) => ({ monster, rosterIndex }))
     .filter(({ rosterIndex }) => rosterIndex !== tamer.activeIndex)
+}
+
+function TouchDebugOverlay() {
+  const { debugSample } = useBoardInput()
+
+  return (
+    <>
+      <div className={styles.touchDebug} data-cy="touch-debug-panel">
+        <strong>Touch Debug</strong>
+        <span>
+          Screen:{' '}
+          {debugSample
+            ? `${Math.round(debugSample.screenPoint.x)}, ${Math.round(debugSample.screenPoint.y)}`
+            : 'none'}
+        </span>
+        <span>
+          Board:{' '}
+          {debugSample
+            ? `${Math.round(debugSample.boardPoint.x)}, ${Math.round(debugSample.boardPoint.y)}`
+            : 'none'}
+        </span>
+        <span>Zone: {debugSample?.zoneId ?? 'none'}</span>
+        <span>Action: {debugSample?.action ?? 'none'}</span>
+      </div>
+      {debugSample ? (
+        <i
+          className={styles.touchCrosshair}
+          data-cy="touch-debug-crosshair"
+          style={
+            {
+              '--touch-debug-x': `${debugSample.boardPoint.x}px`,
+              '--touch-debug-y': `${debugSample.boardPoint.y}px`,
+            } as CSSProperties
+          }
+        />
+      ) : null}
+    </>
+  )
 }

@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { CommandCardFace } from '../../cards/components/CommandCards'
 import {
   MonsterChoiceCard,
@@ -9,6 +10,7 @@ import {
   type MonsterInstance,
 } from '../../game/battle'
 import type { CardDefinition } from '../../game/cards'
+import { useBoardHitZone } from '../input/useBoardInput'
 import styles from './CardDetailOverlay.module.scss'
 
 export type FocusedCardContent =
@@ -36,8 +38,24 @@ type CardDetailOverlayProps = {
 }
 
 export function CardDetailOverlay({ content, onClose }: CardDetailOverlayProps) {
+  const overlayRef = useRef<HTMLDivElement | null>(null)
+  const contentRef = useRef<HTMLDivElement | null>(null)
+
+  useBoardHitZone({
+    id: 'card-detail-close',
+    onTap: onClose,
+    priority: 10,
+    ref: overlayRef,
+  })
+
+  useBoardHitZone({
+    id: 'card-detail-content',
+    priority: 80,
+    ref: contentRef,
+  })
+
   return (
-    <div className={styles.overlay} data-cy="focused-card">
+    <div ref={overlayRef} className={styles.overlay} data-cy="focused-card">
       <button
         type="button"
         aria-label="Close card details"
@@ -46,6 +64,7 @@ export function CardDetailOverlay({ content, onClose }: CardDetailOverlayProps) 
         onClick={onClose}
       />
       <div
+        ref={contentRef}
         className={`${styles.content} ${
           content.kind === 'bench' ? styles.benchContent : ''
         }`}
